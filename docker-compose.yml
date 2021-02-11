@@ -1,5 +1,7 @@
 services:
   db:
+    environment:
+      POSTGRES_PASSWORD: postgres
     image: postgres
     volumes:
       - ./tmp/db:/var/lib/postgresql/data
