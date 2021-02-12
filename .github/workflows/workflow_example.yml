@@ -33,7 +33,7 @@ jobs:
         PGHOST: 
         RAILS_ENV: test
       run: |
-        rails -v
+        bin/rails -v
         bin/rails db:setup
     - name: Run tests
       env:
