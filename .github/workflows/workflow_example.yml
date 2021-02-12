@@ -12,7 +12,6 @@ jobs:
     services:
       postgres:
         env:
-          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         image: postgres
         ports:
@@ -31,8 +30,8 @@ jobs:
         yarn install --pure-lockfile
     - name: Prepare database
       env:
-        RAILS_ENV: test
         PGHOST: localhost
+        RAILS_ENV: test
       run: bin/rails db:setup
     - name: Run tests
       env:
