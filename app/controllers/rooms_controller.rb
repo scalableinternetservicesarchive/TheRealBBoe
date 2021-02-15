@@ -7,7 +7,7 @@ class RoomsController < ApplicationController
         @host_id = params[:host_id]
 
         # TODO: Generate token
-        @token = "1234"
+        @token = "1"
 
         @room = Room.new(token:@token, name:@room_name, host_id:@host_id, location_id:@location_id)
     
@@ -18,6 +18,7 @@ class RoomsController < ApplicationController
         else
             render json: {status: 500}
         end
+        #render json: {status: 400}
     end
 
 end
