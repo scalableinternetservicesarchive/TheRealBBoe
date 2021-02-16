@@ -1,6 +1,9 @@
 class RoomsController < ApplicationController
     protect_from_forgery with: :null_session
 
+    def index
+    end
+    
     def create
         @location_id = params[:location_id]
         @room_name = params[:room_name]
@@ -19,6 +22,13 @@ class RoomsController < ApplicationController
             render json: {status: 500}
         end
         #render json: {status: 400}
+    end
+
+    def new
+        respond_to do |format|
+            format.html
+            format.js
+        end
     end
 
 end
