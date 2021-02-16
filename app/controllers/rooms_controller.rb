@@ -1,5 +1,7 @@
 class RoomsController < ApplicationController
     protect_from_forgery with: :null_session
+    def createRoomPage
+    end
 
     def create
         @location_id = params[:location_id]
