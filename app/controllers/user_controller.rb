@@ -21,7 +21,7 @@ class UserController < ApplicationController
     @user.is_auth = user_params.has_key?(:password)
 
     if @user.save
-      render json: {user: @user}
+      render json: @user
     else
       render json: {status: 200}
     end
@@ -29,5 +29,16 @@ class UserController < ApplicationController
 
   def user_params
     params.require(:user).permit(:username, :password, :name)
+  end
+
+  def destroy 
+    if User.exists? id: params[:id]
+        @user = User.find(params[:id])
+        @user.destroy
+        render json: @user
+    else
+        render json: {status: 404}
+    end
+
   end
 end
