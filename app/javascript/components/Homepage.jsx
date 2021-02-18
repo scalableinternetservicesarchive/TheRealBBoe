@@ -1,11 +1,11 @@
 import React from 'react'
 import { Form } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Homepage = props => (
     <div class="container-fluid">
-    <Form>
+            <div>hello asdfasdfasdfaasdfasdf;</div>
+            <Form>
                 <Form.Group controlId="formBasicEmail">
                 <Form.Label>Email address</Form.Label>
                 <Form.Control type="email" placeholder="Enter email" />
