@@ -6,8 +6,15 @@ import Button from 'react-bootstrap/Button';
 
 const Homepage = (props) => {
 
+    const [isLoggedIn, setIsLoggedIn] = useState(props.signed_in);
+    const [userInfo, setUserInfo] = useState(props.user_info)
+
     const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
     const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
+
+    const [loginModalFields, setLoginModalFields] = useState({
+        name: ""
+    });
     const [createRoomFields, setCreateRoomFields] = useState({
         name: "",
         location: "",
@@ -23,12 +30,59 @@ const Homepage = (props) => {
     const handleJoinRoomClose = () => setShowJoinRoomModal(false);
     const handleJoinRoomShow = () => setShowJoinRoomModal(true);
 
+    const signInAsGuest = () => {
+        console.log(props.session);
+
+        fetch('/guest_signin', {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            body: JSON.stringify({
+                name: loginModalFields["name"]
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data['status'] == 200) {
+                let user_data = data['user_data'];
+                setUserInfo({...userInfo, name: user_data['name']});
+                setIsLoggedIn(true);
+            } else {
+                console.log("Status: " + data['status']);
+            }
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
+    }
+
 
     return (
-        <div class="container-fluid">
+        <div class="container">
+            <div>Welcome to our app {userInfo["name"]}</div>
             <button type="button" class="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button>
-
             <button type="button" class="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button>
+
+            <Modal show={!isLoggedIn}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Create Room</Modal.Title>
+                </Modal.Header>
+
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                    </div>
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setLoginModalFields({...loginModalFields, name: e.target.value})} value={loginModalFields['name']}/>
+                </div>
+            
+                <Modal.Footer>
+                    <Button variant="primary" onClick={signInAsGuest}>
+                    Sign In as a Guest
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
 
             <Modal show={showJoinRoomModal} onHide={handleJoinRoomClose}>

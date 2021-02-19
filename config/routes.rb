@@ -4,5 +4,7 @@ Rails.application.routes.draw do
     post 'user', to: 'user#create'
     delete 'user', to: 'user#destroy'
 
+    post 'guest_signin', to: 'homepage#signin_as_guest'
+
     root 'homepage#index'
 end
