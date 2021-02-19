@@ -12,3 +12,13 @@ User.create(name: 'Laboni', username: 'Laboni', password: 'password', is_auth: t
 User.create(name: 'Wei-Yee', username: 'weigee', password: 'password', is_auth: true)
 User.create(name: 'Saurav', username: 'sauravucsb', password: 'password', is_auth: true)
 User.create(name: 'Mat', username: 'mateolithium', password: 'password', is_auth: true)
+
+Location.create(name: "Isla Vista")
+Location.create(name: "Santa Barbara")
+Location.create(name: "Solvang")
+
+Room.create(token: "ABCDE", name: "Manzanita Floor 1 Decision", location_id: 1)
+
+Member.create(room_id: 1, user_id: 1, is_host: false)
+Member.create(room_id: 1, user_id: 2, is_host: false)
+Member.create(room_id: 1, user_id: 3, is_host: true)
