@@ -7,9 +7,9 @@ class UserController < ApplicationController
 
     if params.has_key?(:room_id)
         # get all users part of the room
-        members = Member.where(rooms_id: params[:room_id])
-        user_ids = members.map(&:users_id)
-        @user = @user.find_all_by_id(user_ids)
+        members = Member.where(room_id: params[:room_id])
+        user_ids = members.map(&:user_id)
+        @user = @user.find(id=user_ids)
     end
 
     render json: @user
