@@ -90,7 +90,7 @@ const Homepage = (props) => {
 
             <Modal show={!isLoggedIn}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create Room</Modal.Title>
+                    <Modal.Title>Sign-in to Proceed</Modal.Title>
                 </Modal.Header>
 
                 <div className="input-group input-group-sm mb-3">
