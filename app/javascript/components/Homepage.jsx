@@ -72,14 +72,29 @@ const Homepage = (props) => {
         console.log(createRoomFields['location'])
         console.log(createRoomFields['name'])
     }
-    function createRoomRequest()
-    {
-        console.log("In create room")
-	   // var form = new FormData();
-	   // form.append("message", message);
-	    var request = new XMLHttpRequest();
-	    request.open("GET", "/localhost:3000/users");
-	    request.send(form);
+    const createRoomRequest=() => {
+        fetch('/room', {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            body: JSON.stringify({
+                room_name: createRoomFields["name"],
+                location_name: createRoomFields["location"]
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data['status'] == 200) {
+                console.log("OK")
+            } else {
+                console.log("Status: " + data['status']);
+            }
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
     }
 
     return (
