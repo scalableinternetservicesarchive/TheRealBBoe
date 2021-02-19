@@ -1,51 +1,24 @@
-class UserController < ApplicationController
-
-  protect_from_forgery :except => :create 
-
+class HomepageController < ApplicationController
   def index
-    @user = User.all
-
-    if params.has_key?(:room_id)
-        # get all users part of the room
-        members = Member.where(room_id: params[:room_id])
-        user_ids = members.map(&:user_id)
-        @user = @user.find(id=user_ids)
-    end
-
-    render json: @user
+  	@user_info = {
+  		"name": ""
+  	}
+  	@signed_in = false 
+  	if session.key?:user_id
+  		@user_info["name"] = User.find(session[:user_id]).name
+  		@signed_in = true
+  	end
   end
 
-  def show
-    @user = User.find(params[:id])
-    render json: @user
-  end
-
-  def new
-    @user = User.new
-  end
-
-  def create
-    @user = User.new(user_params)
-    @user.is_auth = user_params.has_key?(:password)
+  def signin_as_guest
+  	@guest_name = params[:name]
+  	@user = User.new(username: nil, password: nil, name: @guest_name, is_auth: false)
 
     if @user.save
-      render json: @user
+    	session[:user_id] = @user.id
+     	render json: {status: 200, user_data: {name: @user.name, username: @user.username}}
     else
-      render json: {status: 200}
-    end
-  end
-
-  def user_params
-    params.require(:user).permit(:username, :password, :name)
-  end
-
-  def destroy 
-    if User.exists? id: params[:id]
-        @user = User.find(params[:id])
-        @user.destroy
-        render json: @user
-    else
-        render json: {status: 404}
+     	render json: {status: 469, params: params}
     end
   end
 end
