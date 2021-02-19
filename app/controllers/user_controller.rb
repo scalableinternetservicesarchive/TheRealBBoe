@@ -5,7 +5,12 @@ class UserController < ApplicationController
   def index
     @user = User.all
 
-    puts params.has_key? :id
+    if params.has_key?(:room_id)
+        # get all users part of the room
+        members = Member.where(rooms_id: params[:room_id])
+        user_ids = members.map(&:users_id)
+        @user = @user.find_all_by_id(user_ids)
+    end
 
     render json: @user
   end
