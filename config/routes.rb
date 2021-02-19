@@ -4,5 +4,10 @@ Rails.application.routes.draw do
     post 'user', to: 'user#create'
     delete 'user', to: 'user#destroy'
 
+    get 'member', to: 'member#show'
+    get 'members', to: 'member#index'
+    post 'member', to: 'member#create'
+    delete 'member', to: 'member#destroy'
+
     root 'homepage#index'
 end
