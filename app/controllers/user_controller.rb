@@ -4,6 +4,9 @@ class UserController < ApplicationController
 
   def index
     @user = User.all
+
+    puts params.has_key? :id
+
     render json: @user
   end
 
@@ -39,6 +42,5 @@ class UserController < ApplicationController
     else
         render json: {status: 404}
     end
-
   end
 end
