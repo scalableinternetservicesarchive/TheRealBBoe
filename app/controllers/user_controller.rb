@@ -4,6 +4,14 @@ class UserController < ApplicationController
 
   def index
     @user = User.all
+
+    if params.has_key?(:room_id)
+        # get all users part of the room
+        members = Member.where(room_id: params[:room_id])
+        user_ids = members.map(&:user_id)
+        @user = @user.find(id=user_ids)
+    end
+
     render json: @user
   end
 
@@ -39,6 +47,5 @@ class UserController < ApplicationController
     else
         render json: {status: 404}
     end
-
   end
 end

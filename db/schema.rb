@@ -44,7 +44,6 @@ ActiveRecord::Schema.define(version: 2021_02_18_230855) do
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "host_id"
     t.bigint "location_id"
   end
 
