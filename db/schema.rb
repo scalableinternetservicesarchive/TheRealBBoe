@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_15_003726) do
+ActiveRecord::Schema.define(version: 2021_02_18_230855) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,12 +22,13 @@ ActiveRecord::Schema.define(version: 2021_02_15_003726) do
   end
 
   create_table "members", force: :cascade do |t|
-    t.bigint "rooms_id"
-    t.bigint "users_id"
+    t.bigint "room_id"
+    t.bigint "user_id"
+    t.boolean "is_host"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["rooms_id"], name: "index_members_on_rooms_id"
-    t.index ["users_id"], name: "index_members_on_users_id"
+    t.index ["room_id"], name: "index_members_on_room_id"
+    t.index ["user_id"], name: "index_members_on_user_id"
   end
 
   create_table "restaurants", force: :cascade do |t|
@@ -43,7 +44,6 @@ ActiveRecord::Schema.define(version: 2021_02_15_003726) do
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "host_id"
     t.bigint "location_id"
   end
 

@@ -1,14 +1,17 @@
 Rails.application.routes.draw do
-
-  get 'user', to: 'user#index'
-  get 'signup', to: 'user#create'
-
-
-  post 'room', to: 'rooms#create'
-  get 'room/createRoomPage', to: 'rooms#createRoomPage'
+    get 'user', to: 'user#show'
+    get 'users', to: 'user#index'
+    post 'user', to: 'user#create'
+    delete 'user', to: 'user#destroy'
 
 
-  post 'member', to: 'members#create'
 
-  get 'addLocation/:name', to: 'locations#create'
+    post 'room', to: 'rooms#create'
+    get 'room/createRoomPage', to: 'rooms#createRoomPage'
+
+
+    post 'member', to: 'members#create'
+
+    get 'addLocation/:name', to: 'locations#create'
+    
 end
