@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+   
     get 'user', to: 'user#show'
     get 'users', to: 'user#index'
     post 'user', to: 'user#create'
@@ -6,5 +7,19 @@ Rails.application.routes.draw do
 
     post 'guest_signin', to: 'homepage#signin_as_guest'
 
+    post 'room', to: 'rooms#create'
+    get 'room/createRoomPage', to: 'rooms#createRoomPage'
+
+
+    post 'member', to: 'members#create'
+
+    get 'addLocation/:name', to: 'locations#create'
+
+    get 'member', to: 'member#show'
+    get 'members', to: 'member#index'
+    post 'member', to: 'member#create'
+    delete 'member', to: 'member#destroy'
+
     root 'homepage#index'
+
 end

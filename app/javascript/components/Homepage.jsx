@@ -58,6 +58,29 @@ const Homepage = (props) => {
         });
     }
 
+    let locations = props.locations;
+        let optionItems = locations.map((location) =>
+                <option  value={location.name} key={location.name}>{location.name}</option>
+            );
+    function updateLocation(e)
+    {
+        console.log("test")
+        console.log(e.target.value)
+        //console.log(createRoomFields['location'])
+        //setCreateRoomFields({...createRoomFields, location: e.target.value})
+        createRoomFields['location'] = e.target.value
+        console.log(createRoomFields['location'])
+        console.log(createRoomFields['name'])
+    }
+    function createRoomRequest()
+    {
+        console.log("In create room")
+	   // var form = new FormData();
+	   // form.append("message", message);
+	    var request = new XMLHttpRequest();
+	    request.open("GET", "/localhost:3000/users");
+	    request.send(form);
+    }
 
     return (
         <div class="container">
@@ -133,7 +156,13 @@ const Homepage = (props) => {
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Location</span>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setCreateRoomFields({...createRoomFields, location: e.target.value})} value={createRoomFields['location']}/>
+                    <div>
+                            <select 
+                            onChange={updateLocation} 
+                            >
+                                {optionItems}
+                            </select>
+                    </div>
                 </div>
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
@@ -146,7 +175,7 @@ const Homepage = (props) => {
                     <Button variant="secondary" onClick={handleCreateRoomClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleCreateRoomShow}>
+                    <Button variant="primary" onClick={createRoomRequest}>
                     Create the Room!
                     </Button>
                 </Modal.Footer>

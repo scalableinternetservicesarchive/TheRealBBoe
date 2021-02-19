@@ -20,6 +20,5 @@ class HomepageController < ApplicationController
     else
      	render json: {status: 469, params: params}
     end
-
   end
 end
