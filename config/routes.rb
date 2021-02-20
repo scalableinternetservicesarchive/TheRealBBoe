@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     post 'guest_signin', to: 'homepages#signin_as_guest'
 
     # room
+    get 'room', to: 'rooms#show'
     post 'room', to: 'rooms#create'
     get 'room/createRoomPage', to: 'rooms#createRoomPage'
 

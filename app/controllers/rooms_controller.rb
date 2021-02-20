@@ -1,6 +1,16 @@
 class RoomsController < ApplicationController
     protect_from_forgery with: :null_session
+
     def createRoomPage
+    end
+
+    def show 
+        if params.has_key?(:id)
+            @room = Room.find params[:id]
+        elsif params.has_key?(:token)
+            @room = Room.find_by! token: params[:token]
+        end
+        render json: @room	
     end
 
     def create
