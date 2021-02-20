@@ -12,9 +12,10 @@ Rails.application.routes.draw do
     post 'member', to: 'members#create'
     delete 'member', to: 'members#destroy'
 
-    # homepage
-    root 'homepages#index'
-    post 'guest_signin', to: 'homepages#signin_as_guest'
+    # restaurant operations
+    get 'restaurant', to: 'restaurants#show'
+    get 'restaurants', to: 'restaurants#index'
+    post 'restaurant', to: 'restaurants#create'
 
     # room
     get 'room', to: 'rooms#show'
@@ -23,4 +24,10 @@ Rails.application.routes.draw do
 
     # location
     get 'addLocation/:name', to: 'locations#create'
+
+    # homepage
+    root 'homepages#index'
+    post 'guest_signin', to: 'homepages#signin_as_guest'
+
+    
 end

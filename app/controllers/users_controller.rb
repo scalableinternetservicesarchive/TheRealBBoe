@@ -27,12 +27,8 @@ class UsersController < ApplicationController
     def create	
         @user = User.new(user_params)	
         @user.is_auth = user_params.has_key?(:password)	
-
-        if @user.save	
-        render json: @user	
-        else	
-        render json: {status: 200}	
-        end	
+        @user.save	
+        render json: @user
     end	
 
     def user_params	
@@ -45,7 +41,7 @@ class UsersController < ApplicationController
             @user.destroy	
             render json: @user	
         else	
-            render json: {status: 404}	
+            render json: {}, status: 404	
         end	
     end
 end

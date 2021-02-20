@@ -31,7 +31,7 @@ class RoomsController < ApplicationController
             render json: @room
             # TODO: Send user to their room page
         else
-            render json: {status: 500}
+            render json: {}, status: 500
         end
         #render json: {status: 400}
     end
