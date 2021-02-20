@@ -6,17 +6,19 @@ class RoomsController < ApplicationController
     def create
         @location_id = params[:location_id]
         @room_name = params[:room_name]
-        
-
-        # TODO: Generate token
-        @token = "1"
 
        # @location_id = Location.where(name: @location_name).pluck(:id)[0]
-        @room = Room.new(token:@token, name:@room_name, location_id:@location_id)
+        @room = Room.new(name:@room_name, location_id:@location_id)
+
+        # generate token
+        @room.token = loop do
+            new_token = SecureRandom.hex(4)
+            break new_token unless Room.exists? token: new_token
+        end
     
         if @room.save
             # TODO: Send them success
-            render json: {status: 200, user_data: {token: @token}}
+            render json: @room
             # TODO: Send user to their room page
         else
             render json: {status: 500}
