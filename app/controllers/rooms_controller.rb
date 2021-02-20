@@ -4,14 +4,14 @@ class RoomsController < ApplicationController
     end
 
     def create
-        @location_name = params[:location_name]
+        @location_id = params[:location_id]
         @room_name = params[:room_name]
         
 
         # TODO: Generate token
         @token = "1"
 
-        @location_id = Location.where(name: @location_name).pluck(:id)[0]
+       # @location_id = Location.where(name: @location_name).pluck(:id)[0]
         @room = Room.new(token:@token, name:@room_name, location_id:@location_id)
     
         if @room.save

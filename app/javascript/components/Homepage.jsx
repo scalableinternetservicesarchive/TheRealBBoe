@@ -60,7 +60,7 @@ const Homepage = (props) => {
 
     let locations = props.locations;
         let optionItems = locations.map((location) =>
-                <option  value={location.name} key={location.name}>{location.name}</option>
+                <option  value={location.id} key={location.name}>{location.name}</option>
             );
     function updateLocation(e)
     {
@@ -80,7 +80,7 @@ const Homepage = (props) => {
             }, 
             body: JSON.stringify({
                 room_name: createRoomFields["name"],
-                location_name: createRoomFields["location"]
+                location_id: createRoomFields["location"]
             })
         })
         .then(response => response.json())
