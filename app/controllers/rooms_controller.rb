@@ -28,7 +28,7 @@ class RoomsController < ApplicationController
     
         if @room.save
             # TODO: Send them success
-            render json: @room
+            render json: {status: 200, room_token: @room.token}
             # TODO: Send user to their room page
         else
             render json: {}, status: 500
