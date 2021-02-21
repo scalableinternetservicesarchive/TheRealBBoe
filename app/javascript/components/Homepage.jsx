@@ -89,7 +89,6 @@ const Homepage = (props) => {
             if (data['status'] == 200) {
                 console.log("OK")
                 createRoomFields['token'] = data['room_token']
-                console.log(createRoomFields['token'] )
                 alert('Your room token is: ' + createRoomFields['token']);
             } else {
                 console.log("Status: " + data['status']);
@@ -186,7 +185,8 @@ const Homepage = (props) => {
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" />
+                    
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"  value={createRoomFields['token']}/>
                 </div>
 
                 <Modal.Footer>

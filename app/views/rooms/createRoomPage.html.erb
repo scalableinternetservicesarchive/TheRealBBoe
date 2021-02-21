@@ -1,12 +1,2 @@
 
-<h2> Hey create your room </h2>
-
-
-
-<%= text_field "room", "room_name" %>
-</br> 
-</br>
-<%= collection_select :post, :name, Location.all, :id, :name %>
-</br>
-</br>
-<%= '<button type="button">Take me to My Room</button>'.html_safe %>
+<%= react_component('Roompage',  {prerender: true}) %>
