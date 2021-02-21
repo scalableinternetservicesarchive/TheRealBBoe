@@ -2,6 +2,8 @@ class RoomsController < ApplicationController
     protect_from_forgery with: :null_session
 
     def createRoomPage
+       # @restaurants = redirect_to controller: :restaurants, action: :index 
+        @location_id =1 
     end
 
     def show 

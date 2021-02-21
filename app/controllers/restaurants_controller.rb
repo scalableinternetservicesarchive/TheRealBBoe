@@ -7,7 +7,7 @@ class RestaurantsController < ApplicationController
             # get all restaurants in certain location
             @restaurant = @restaurant.where(location_id: params[:location_id])
         end
-        render json: @restaurant 
+        render json: {data: @restaurant} 
     end
 
     def show	

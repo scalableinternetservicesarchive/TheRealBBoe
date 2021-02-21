@@ -1,2 +1,2 @@
 
-<%= react_component('Roompage',  {prerender: true}) %>
+<%= react_component('Roompage',  {prerender: true, restaurants: Restaurant.where(location_id: @location_id)}) %>
