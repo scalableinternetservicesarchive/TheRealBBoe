@@ -88,6 +88,8 @@ const Homepage = (props) => {
             console.log(data);
             if (data['status'] == 200) {
                 console.log("OK")
+                createRoomFields['token'] = data['room_token']
+                alert('Your room token is: ' + createRoomFields['token']);
             } else {
                 console.log("Status: " + data['status']);
             }
@@ -139,7 +141,7 @@ const Homepage = (props) => {
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, token: e.target.value})} value={joinRoomFields['token']}/>
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={createRoomRequest} value={joinRoomFields['token']}/>
                 </div>
 
                 <Modal.Footer>
@@ -159,7 +161,7 @@ const Homepage = (props) => {
                 <Modal.Header closeButton>
                     <Modal.Title>Create Room</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+                <Modal.Body>Create your own room!</Modal.Body>
 
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
@@ -183,7 +185,8 @@ const Homepage = (props) => {
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setCreateRoomFields({...createRoomFields, token: e.target.value})} value={createRoomFields['token']}/>
+                    
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"  value={createRoomFields['token']}/>
                 </div>
 
                 <Modal.Footer>
