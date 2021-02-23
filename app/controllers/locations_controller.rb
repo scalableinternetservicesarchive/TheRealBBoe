@@ -6,7 +6,7 @@ class LocationsController < ApplicationController
       if @location.save
         render json: {location: @location}
       else
-        render json: {status: 500}
+        render json: {}, status: 500
       end 
     end
 end

@@ -6,19 +6,22 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-User.create(name: 'Ryan', username: 'Ryan X.', password: 'password', is_auth: true)
-User.create(name: 'April', username: 'aprilsanchez', password: 'password', is_auth: true)
-User.create(name: 'Laboni', username: 'Laboni', password: 'password', is_auth: true)
-User.create(name: 'Wei-Yee', username: 'weigee', password: 'password', is_auth: true)
-User.create(name: 'Saurav', username: 'sauravucsb', password: 'password', is_auth: true)
-User.create(name: 'Mat', username: 'mateolithium', password: 'password', is_auth: true)
+User.find_or_create_by(name: 'Ryan', username: 'Ryan X.', password: 'password', is_auth: true)
+User.find_or_create_by(name: 'April', username: 'aprilsanchez', password: 'password', is_auth: true)
+User.find_or_create_by(name: 'Laboni', username: 'Laboni', password: 'password', is_auth: true)
+User.find_or_create_by(name: 'Wei-Yee', username: 'weigee', password: 'password', is_auth: true)
+User.find_or_create_by(name: 'Saurav', username: 'sauravucsb', password: 'password', is_auth: true)
+User.find_or_create_by(name: 'Mat', username: 'mateolithium', password: 'password', is_auth: true)
 
-Location.create(name: "Isla Vista")
-Location.create(name: "Santa Barbara")
-Location.create(name: "Solvang")
+Location.find_or_create_by(name: "Isla Vista")
+Location.find_or_create_by(name: "Santa Barbara")
+Location.find_or_create_by(name: "Solvang")
 
-Room.create(token: "ABCDE", name: "Manzanita Floor 1 Decision", location_id: 1)
+Room.find_or_create_by(token: "ABCDE", name: "Manzanita Floor 1 Decision", location_id: 1)
 
-Member.create(room_id: 1, user_id: 1, is_host: false)
-Member.create(room_id: 1, user_id: 2, is_host: false)
-Member.create(room_id: 1, user_id: 3, is_host: true)
+Member.find_or_create_by(room_id: 1, user_id: 1, is_host: false)
+Member.find_or_create_by(room_id: 1, user_id: 2, is_host: false)
+Member.find_or_create_by(room_id: 1, user_id: 3, is_host: true)
+
+
+Restaurant.find_or_create_by(name: "Deja Vu", location_id: 1, description: "Indian food")
