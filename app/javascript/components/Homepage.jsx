@@ -72,6 +72,10 @@ const Homepage = (props) => {
         console.log(createRoomFields['location'])
         console.log(createRoomFields['name'])
     }
+    const joinRoomRequest=() => {
+            console.log ("you are joined with token ", )
+    }
+
     const createRoomRequest=() => {
         fetch('/room', {
             method: 'POST', 
@@ -141,14 +145,14 @@ const Homepage = (props) => {
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={createRoomRequest} value={joinRoomFields['token']}/>
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, token: e.target.value})} value={joinRoomFields['token']}/>
                 </div>
 
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleJoinRoomClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleJoinRoomShow}>
+                    <Button variant="primary" onClick={joinRoomRequest}>
                     Join the Room!
                     </Button>
                 </Modal.Footer>
