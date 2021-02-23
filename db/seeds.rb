@@ -25,3 +25,10 @@ Member.find_or_create_by(room_id: 1, user_id: 3, is_host: true)
 
 
 Restaurant.find_or_create_by(name: "Deja Vu", location_id: 1, description: "Indian food")
+Restaurant.find_or_create_by(name: "Freebirds", location_id: 1, description: "Burritos")
+Restaurant.find_or_create_by(name: "Buddha Bowls", location_id: 1, description: "Bread Bowls")
+Restaurant.find_or_create_by(name: "Woodstock's Pizza", location_id: 1, description: "Pizza")
+Restaurant.find_or_create_by(name: "South Coast Deli", location_id: 1, description: "Sandwiches")
+Restaurant.find_or_create_by(name: "Naan Stop", location_id: 1, description: "Indian food")
+Restaurant.find_or_create_by(name: "The Habit Burger Grill", location_id: 1, description: "Burger and Fries")
+Restaurant.find_or_create_by(name: "Lao Wang", location_id: 1, description: "Chinese Noodles")
