@@ -1,0 +1,2 @@
+
+<%= react_component('Roompage',  {prerender: true, room_token: @room_token, restaurants: Restaurant.where(location_id: @location_id)}) %>

@@ -1,9 +1,25 @@
 class RoomsController < ApplicationController
     protect_from_forgery with: :null_session
 
-    def createRoomPage
+    def join_room_page
        # @restaurants = redirect_to controller: :restaurants, action: :index 
-        @location_id =1 
+
+        if session.key?:user_id
+            @room_token = params[:room_token]
+            user_id = session[:user_id]
+            room = Room.find_by(token: @room_token)
+
+            if !Member.find_by(user_id: user_id, room: room.id)
+                member = Member.new(room_id: room.id, user_id: user_id, is_host: false)
+                if !member.save
+                    render json: {status: 460}
+                end
+            end
+            
+            @location_id =1 
+        else
+            redirect_to '/'
+        end
     end
 
     def show 

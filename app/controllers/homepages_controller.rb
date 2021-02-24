@@ -1,13 +1,13 @@
 class HomepagesController < ApplicationController
   def index
-  	@user_info = {
-  		"name": ""
-  	}
-  	@signed_in = false 
-  	if session.key?:user_id
-  		@user_info["name"] = User.find(session[:user_id]).name
-  		@signed_in = true
-  	end
+    @user_info = {
+      "name": ""
+    }
+    @signed_in = false 
+    if session.key?:user_id
+      @user_info["name"] = User.find(session[:user_id]).name
+      @signed_in = true
+    end
   end
 
   def signin_as_guest

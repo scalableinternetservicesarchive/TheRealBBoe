@@ -1,9 +1,27 @@
 class MembersController < ApplicationController
-    protect_from_forgery :except => :create 
 
     def index
         @member = Member.all
         render json: @member 
+    end
+
+    def update_member_votes
+        @user_votes = params[:votes]
+        @token = params[:token]
+        @room_id = Room.find_by(token: @token).id
+        @member = Member.find_by(user_id: session[:user_id], room_id: @room_id)
+
+        #render json:{status: 490, votes: @user_votes, member: @member, room_id: @room_id, token: @token, session: session[:user_id]}
+        #render json: {status: 409, votes: @user_votes, token: @token}
+
+        @member.votes = @user_votes
+        if @member.save
+            render json: {status: 200}
+        else
+            render json: {status: 450}
+        end
+
+        
     end
 
     def show
