@@ -12,7 +12,7 @@ class RoomsController < ApplicationController
         elsif params.has_key?(:token)
             @room = Room.find_by! token: params[:token]
         end
-        render json: @room	
+
     end
 
     def create
@@ -35,7 +35,7 @@ class RoomsController < ApplicationController
         else
             render json: {}, status: 500
         end
-        #render json: {status: 400}
+
     end
 
 end

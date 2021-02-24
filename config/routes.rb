@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     post 'restaurant', to: 'restaurants#create'
 
     # room
-    get 'room', to: 'rooms#show'
+    get 'room/:token', to: 'rooms#show'
     post 'room', to: 'rooms#create'
     get 'room/createRoomPage', to: 'rooms#createRoomPage'
 

@@ -3,6 +3,9 @@ import { useState, useEffect } from "react";
 import { Form } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import { Redirect } from "react-router-dom";
+import Roompage from './Roompage'
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 const Homepage = (props) => {
 
@@ -24,6 +27,7 @@ const Homepage = (props) => {
         name: "",
         token: "",
     });
+    const [redirect, setRedirect] = useState(false)
 
     const handleCreateRoomClose = () => setShowCreateRoomModal(false);
     const handleCreateRoomShow = () => setShowCreateRoomModal(true);
@@ -73,7 +77,13 @@ const Homepage = (props) => {
         console.log(createRoomFields['name'])
     }
     const joinRoomRequest=() => {
-            console.log ("you are joined with token ", )
+            setRedirect(true)
+            fetch('/room/' + joinRoomFields["token"], {
+                method: 'GET', 
+                headers: {
+                    'Content-Type': 'application/json'
+                }, 
+            });
     }
 
     const createRoomRequest=() => {
@@ -102,107 +112,121 @@ const Homepage = (props) => {
         });
     }
 
-    return (
-        <div class="container">
-            <div>Welcome to our app {userInfo["name"]}</div>
-            <button type="button" class="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button>
-            <button type="button" class="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button>
+    if (redirect) {
+        //<Link to="/react">React</Link>
+        return (
 
-            <Modal show={!isLoggedIn}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Sign-in to Proceed</Modal.Title>
-                </Modal.Header>
+            <Router>
+                <Redirect to={"/room/" + joinRoomFields["token"]} />
+                <Switch> 
+                    <Route exact path="/room/:token" component={Roompage} />
+                </Switch>
+            </Router>
+        );
+    }
+    else {
+        return (
+            <div class="container">
+                <div>Welcome to our app {userInfo["name"]}</div>
+                <button type="button" class="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button>
+                <button type="button" class="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button>
 
-                <div className="input-group input-group-sm mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                <Modal show={!isLoggedIn}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Sign-in to Proceed</Modal.Title>
+                    </Modal.Header>
+
+                    <div className="input-group input-group-sm mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                        </div>
+                        <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setLoginModalFields({...loginModalFields, name: e.target.value})} value={loginModalFields['name']}/>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setLoginModalFields({...loginModalFields, name: e.target.value})} value={loginModalFields['name']}/>
-                </div>
-            
-                <Modal.Footer>
-                    <Button variant="primary" onClick={signInAsGuest}>
-                    Sign In as a Guest
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+                
+                    <Modal.Footer>
+                        <Button variant="primary" onClick={signInAsGuest}>
+                        Sign In as a Guest
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
 
 
-            <Modal show={showJoinRoomModal} onHide={handleJoinRoomClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Join Room</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+                <Modal show={showJoinRoomModal} onHide={handleJoinRoomClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Join Room</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
 
-                <div className="input-group input-group-sm mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                    <div className="input-group input-group-sm mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                        </div>
+                        <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, name: e.target.value})} value={joinRoomFields['name']}/>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, name: e.target.value})} value={joinRoomFields['name']}/>
-                </div>
-                <div className="input-group input-group-sm mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
+                    <div className="input-group input-group-sm mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
+                        </div>
+                        <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, token: e.target.value})} value={joinRoomFields['token']}/>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, token: e.target.value})} value={joinRoomFields['token']}/>
-                </div>
 
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleJoinRoomClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={joinRoomRequest}>
-                    Join the Room!
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleJoinRoomClose}>
+                            Close
+                        </Button>
+                        <Button variant="primary" onClick={joinRoomRequest}>
+                        Join the Room!
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
 
 
 
 
-            <Modal show={showCreateRoomModal} onHide={handleCreateRoomClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Create Room</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Create your own room!</Modal.Body>
+                <Modal show={showCreateRoomModal} onHide={handleCreateRoomClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Create Room</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Create your own room!</Modal.Body>
 
-                <div className="input-group input-group-sm mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                    <div className="input-group input-group-sm mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                        </div>
+                        <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setCreateRoomFields({...createRoomFields, name: e.target.value})} value={createRoomFields['name']}/>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setCreateRoomFields({...createRoomFields, name: e.target.value})} value={createRoomFields['name']}/>
-                </div>
-                <div className="input-group input-group-sm mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Location</span>
+                    <div className="input-group input-group-sm mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="inputGroup-sizing-sm">Location</span>
+                        </div>
+                        <div>
+                                <select 
+                                onChange={updateLocation} 
+                                >
+                                    {optionItems}
+                                </select>
+                        </div>
                     </div>
-                    <div>
-                            <select 
-                            onChange={updateLocation} 
-                            >
-                                {optionItems}
-                            </select>
+                    <div className="input-group input-group-sm mb-3">
+                        <div className="input-group-prepend">
+                            <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
+                        </div>
+                        
+                        <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"  value={createRoomFields['token']}/>
                     </div>
-                </div>
-                <div className="input-group input-group-sm mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
-                    </div>
-                    
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm"  value={createRoomFields['token']}/>
-                </div>
 
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCreateRoomClose}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={createRoomRequest}>
-                    Create the Room!
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </div>
-    );
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCreateRoomClose}>
+                            Close
+                        </Button>
+                        <Button variant="primary" onClick={createRoomRequest}>
+                        Create the Room!
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
+        );
+    }
 
 }
 
