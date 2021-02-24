@@ -25,8 +25,17 @@ class MembersController < ApplicationController
     end
 
     def show
-        @member = Member.find(params[:id])
-        render json: @member
+        @member = Member.where("room_id= ?",params[:room_id])
+        returnList = []
+        @member.find_each do |m|
+            temp = {}
+            temp.store("user_id",m[:user_id])
+            temp.store("user_name", User.where(id: m[:user_id]).first[:username]) 
+            temp.store("is_host",m[:is_host])
+            #temp.store ("votes",m[:votes])
+            returnList.push(temp)
+        end
+        render json: JSON[returnList]
     end
 
     def create

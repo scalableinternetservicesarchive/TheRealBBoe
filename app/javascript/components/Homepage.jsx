@@ -72,6 +72,10 @@ const Homepage = (props) => {
         console.log(createRoomFields['location'])
         console.log(createRoomFields['name'])
     }
+    const joinRoomRequest=() => {
+            console.log ("you are joined with token ", )
+    }
+
     const createRoomRequest=() => {
         fetch('/room', {
             method: 'POST', 
@@ -88,8 +92,7 @@ const Homepage = (props) => {
             console.log(data);
             if (data['status'] == 200) {
                 console.log("OK")
-                createRoomFields['token'] = data['room_token']
-                alert('Your room token is: ' + createRoomFields['token']);
+                setCreateRoomFields({...createRoomFields, token: data['room_token']})
             } else {
                 console.log("Status: " + data['status']);
             }
@@ -141,14 +144,14 @@ const Homepage = (props) => {
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={createRoomRequest} value={joinRoomFields['token']}/>
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, token: e.target.value})} value={joinRoomFields['token']}/>
                 </div>
 
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleJoinRoomClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={handleJoinRoomShow}>
+                    <Button variant="primary" onClick={joinRoomRequest}>
                     Join the Room!
                     </Button>
                 </Modal.Footer>
@@ -201,31 +204,6 @@ const Homepage = (props) => {
         </div>
     );
 
-    // return (
-    // <div class="container-fluid">
-    //     <div>hello asdfasdfasdfaasdfasdf;</div>
-    //         <Form>
-    //             <Form.Group controlId="formBasicEmail">
-    //             <Form.Label>Email address</Form.Label>
-    //             <Form.Control type="email" placeholder="Enter email" />
-    //             <Form.Text className="text-muted">
-    //             We'll never share your email with anyone else.
-    //             </Form.Text>
-    //         </Form.Group>
-
-    //         <Form.Group controlId="formBasicPassword">
-    //             <Form.Label>Password</Form.Label>
-    //             <Form.Control type="password" placeholder="Password" />
-    //         </Form.Group>
-    //         <Form.Group controlId="formBasicCheckbox">
-    //             <Form.Check type="checkbox" label="Check me out" />
-    //         </Form.Group>
-    //         <Button variant="primary" type="submit">
-    //             Submit
-    //         </Button>
-    //     </Form>
-    // </div>
-    // );
 }
 
 export default Homepage 
