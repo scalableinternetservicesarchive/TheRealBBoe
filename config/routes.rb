@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     get 'members', to: 'members#index'
     post 'member', to: 'members#create'
     delete 'member', to: 'members#destroy'
+    post 'member/update_vote', to: 'members#update_member_votes'
 
     # restaurant operations
     get 'restaurant', to: 'restaurants#show'
@@ -18,9 +19,10 @@ Rails.application.routes.draw do
     post 'restaurant', to: 'restaurants#create'
 
     # room
-    get 'room', to: 'rooms#show'
+    post 'room/join', to: 'rooms#join_room'
+    get 'room/:token', to: 'rooms#roompage'
     post 'room', to: 'rooms#create'
-    get 'room/createRoomPage', to: 'rooms#createRoomPage'
+    
 
     # location
     get 'addLocation/:name', to: 'locations#create'
