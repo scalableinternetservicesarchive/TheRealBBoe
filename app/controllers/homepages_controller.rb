@@ -5,8 +5,12 @@ class HomepagesController < ApplicationController
     }
     @signed_in = false 
     if session.key?:user_id
-      @user_info["name"] = User.find(session[:user_id]).name
-      @signed_in = true
+      if User.exists?(id: session[:user_id])
+        @user_info["name"] = User.find(session[:user_id]).name
+        @signed_in = true
+      else
+        session.delete(:user_id)
+      end
     end
   end
 
