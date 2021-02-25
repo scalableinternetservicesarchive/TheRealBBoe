@@ -17,7 +17,7 @@ const Homepage = (props) => {
     });
     const [createRoomFields, setCreateRoomFields] = useState({
         name: "",
-        location: "",
+        location: props.locations[0]["id"],
         token: "",
     });
     const [joinRoomFields, setJoinRoomFields] = useState({
@@ -29,6 +29,13 @@ const Homepage = (props) => {
     const handleCreateRoomShow = () => setShowCreateRoomModal(true);
     const handleJoinRoomClose = () => setShowJoinRoomModal(false);
     const handleJoinRoomShow = () => setShowJoinRoomModal(true);
+
+    let locations = props.locations;
+    let optionItems = locations.map((location) =>
+            <option  value={location.id} key={location.name}>{location.name}</option>
+        );
+    console.log(locations);
+
 
     const signInAsGuest = () => {
         console.log(props.session);
@@ -58,25 +65,40 @@ const Homepage = (props) => {
         });
     }
 
-    let locations = props.locations;
-        let optionItems = locations.map((location) =>
-                <option  value={location.id} key={location.name}>{location.name}</option>
-            );
     function updateLocation(e)
     {
         console.log("test")
         console.log(e.target.value)
         //console.log(createRoomFields['location'])
         //setCreateRoomFields({...createRoomFields, location: e.target.value})
-        createRoomFields['location'] = e.target.value
-        console.log(createRoomFields['location'])
+        
+        setCreateRoomFields({...createRoomFields, location: parseInt(e.target.value)})
+
+        console.log(typeof(createRoomFields['location']))
         console.log(createRoomFields['name'])
     }
     const joinRoomRequest=() => {
-            console.log ("you are joined with token ", )
+        console.log ("you are joined with token ", )
+        fetch('/room/join', {
+            method: 'POST', 
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: joinRoomFields["token"],
+            })
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            }
+        })
     }
 
     const createRoomRequest=() => {
+        // console.log(createRoomFields["name"]);
+        // console.log(createRoomFields["location"]);
         fetch('/room', {
             method: 'POST', 
             headers: {
@@ -177,9 +199,7 @@ const Homepage = (props) => {
                         <span className="input-group-text" id="inputGroup-sizing-sm">Location</span>
                     </div>
                     <div>
-                            <select 
-                            onChange={updateLocation} 
-                            >
+                            <select value={createRoomFields["location"]} onChange={updateLocation} >
                                 {optionItems}
                             </select>
                     </div>
