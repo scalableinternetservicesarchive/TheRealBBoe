@@ -25,7 +25,8 @@ Rails.application.routes.draw do
     
 
     # location
-    get 'addLocation/:name', to: 'locations#create'
+    post 'location', to: 'locations#create'
+    get 'locations', to: 'locations#index'
 
     # homepage
     root 'homepages#index'

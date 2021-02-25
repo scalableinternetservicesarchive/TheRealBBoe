@@ -1,5 +1,10 @@
 class LocationsController < ApplicationController
 
+    def index
+        @location = Location.all	
+        render json: @location	
+    end
+
     def create
       @name = params[:name]
       @location = Location.new(name:@name)
