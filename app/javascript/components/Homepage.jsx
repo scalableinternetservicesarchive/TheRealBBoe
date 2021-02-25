@@ -17,7 +17,7 @@ const Homepage = (props) => {
     });
     const [createRoomFields, setCreateRoomFields] = useState({
         name: "",
-        location: props.locations[0]["id"],
+        location: (props.locations.length > 0) ? props.locations[0]["id"] : "",
         token: "",
     });
     const [joinRoomFields, setJoinRoomFields] = useState({
