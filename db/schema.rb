@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema.define(version: 2021_02_24_081102) do
+=======
+ActiveRecord::Schema.define(version: 2021_02_20_083847) do
+>>>>>>> 78b4cf15db3ce77a0aa9746b03e4519b4ff4f353
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,7 +31,8 @@ ActiveRecord::Schema.define(version: 2021_02_24_081102) do
     t.boolean "is_host"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "votes"
+    t.boolean "participated"
+    t.integer "selections", default: [], array: true
     t.index ["room_id"], name: "index_members_on_room_id"
     t.index ["user_id"], name: "index_members_on_user_id"
   end
