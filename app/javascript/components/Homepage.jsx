@@ -17,7 +17,7 @@ const Homepage = (props) => {
     });
     const [createRoomFields, setCreateRoomFields] = useState({
         name: "",
-        location: "",
+        location: props.locations[0]["id"],
         token: "",
     });
     const [joinRoomFields, setJoinRoomFields] = useState({
@@ -29,6 +29,13 @@ const Homepage = (props) => {
     const handleCreateRoomShow = () => setShowCreateRoomModal(true);
     const handleJoinRoomClose = () => setShowJoinRoomModal(false);
     const handleJoinRoomShow = () => setShowJoinRoomModal(true);
+
+    let locations = props.locations;
+    let optionItems = locations.map((location) =>
+            <option  value={location.id} key={location.name}>{location.name}</option>
+        );
+    console.log(locations);
+
 
     const signInAsGuest = () => {
         console.log(props.session);
@@ -58,25 +65,54 @@ const Homepage = (props) => {
         });
     }
 
-    let locations = props.locations;
-        let optionItems = locations.map((location) =>
-                <option  value={location.id} key={location.name}>{location.name}</option>
-            );
     function updateLocation(e)
     {
         console.log("test")
         console.log(e.target.value)
         //console.log(createRoomFields['location'])
         //setCreateRoomFields({...createRoomFields, location: e.target.value})
-        createRoomFields['location'] = e.target.value
-        console.log(createRoomFields['location'])
+        
+        setCreateRoomFields({...createRoomFields, location: parseInt(e.target.value)})
+
+        console.log(typeof(createRoomFields['location']))
         console.log(createRoomFields['name'])
     }
     const joinRoomRequest=() => {
-            console.log ("you are joined with token ", )
+        console.log ("you have joined with token ", )
+        fetch('/room/join', {
+            method: 'POST', 
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: joinRoomFields["token"],
+            })
+        })
+        .then(response => {
+            if (response.redirected) {
+                console.log("in redirection")
+                window.location.href = response.url;
+            }
+            else{
+                alert("Invalid token; try again")
+            }
+        })
+        /*.then(data => {
+            console.log("in data");
+            console.log(data);
+            console.log(status);
+            if (data['status'] == 200) {
+                console.log("OK")
+            } else if (data['status'] == 460){
+                console.log("Status: " + data['status']);
+            }
+        })*/
     }
 
     const createRoomRequest=() => {
+        // console.log(createRoomFields["name"]);
+        // console.log(createRoomFields["location"]);
         fetch('/room', {
             method: 'POST', 
             headers: {
@@ -92,8 +128,7 @@ const Homepage = (props) => {
             console.log(data);
             if (data['status'] == 200) {
                 console.log("OK")
-                createRoomFields['token'] = data['room_token']
-                alert('Your room token is: ' + createRoomFields['token']);
+                setCreateRoomFields({...createRoomFields, token: data['room_token']})
             } else {
                 console.log("Status: " + data['status']);
             }
@@ -178,9 +213,7 @@ const Homepage = (props) => {
                         <span className="input-group-text" id="inputGroup-sizing-sm">Location</span>
                     </div>
                     <div>
-                            <select 
-                            onChange={updateLocation} 
-                            >
+                            <select value={createRoomFields["location"]} onChange={updateLocation} >
                                 {optionItems}
                             </select>
                     </div>
@@ -205,31 +238,6 @@ const Homepage = (props) => {
         </div>
     );
 
-    // return (
-    // <div class="container-fluid">
-    //     <div>hello asdfasdfasdfaasdfasdf;</div>
-    //         <Form>
-    //             <Form.Group controlId="formBasicEmail">
-    //             <Form.Label>Email address</Form.Label>
-    //             <Form.Control type="email" placeholder="Enter email" />
-    //             <Form.Text className="text-muted">
-    //             We'll never share your email with anyone else.
-    //             </Form.Text>
-    //         </Form.Group>
-
-    //         <Form.Group controlId="formBasicPassword">
-    //             <Form.Label>Password</Form.Label>
-    //             <Form.Control type="password" placeholder="Password" />
-    //         </Form.Group>
-    //         <Form.Group controlId="formBasicCheckbox">
-    //             <Form.Check type="checkbox" label="Check me out" />
-    //         </Form.Group>
-    //         <Button variant="primary" type="submit">
-    //             Submit
-    //         </Button>
-    //     </Form>
-    // </div>
-    // );
 }
 
 export default Homepage 
