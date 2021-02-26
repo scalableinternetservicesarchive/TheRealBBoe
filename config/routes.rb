@@ -22,6 +22,7 @@ Rails.application.routes.draw do
     post 'room/join', to: 'rooms#join_room'
     get 'room/:token', to: 'rooms#roompage'
     post 'room', to: 'rooms#create'
+    get 'rooms', to: 'rooms#index'
     
 
     # location

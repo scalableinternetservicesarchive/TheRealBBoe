@@ -1,10 +1,15 @@
 class RoomsController < ApplicationController
     protect_from_forgery with: :null_session
 
+    def index
+        @room = Room.all	
+        render json: @room
+    end
+
     def roompage
-        if session.key?:user_id
+        if session.key?(:user_id) || params.has_key?(:user_id)
             @room_token = params[:token]
-            user_id = session[:user_id]
+            user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
             room = Room.find_by(token: @room_token)
             @location_id = room.location_id
 
@@ -14,8 +19,6 @@ class RoomsController < ApplicationController
                     render json: {status: 460}
                 end
             end
-
-            
         else
             redirect_to "/"
         end
@@ -50,7 +53,7 @@ class RoomsController < ApplicationController
     
         if @room.save
             # TODO: Send them success
-            render json: {status: 200, room_token: @room.token}
+            render json: {status: 200, room_token: @room.token, id: @room.id}
             # TODO: Send user to their room page
         else
             render json: {}, status: 500
