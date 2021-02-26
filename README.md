@@ -35,7 +35,7 @@ docker-compose run web rails db:migrate\
 docker-compose run web rails db:seed\
 
 sudo docker exec -it therealbboe_db_1 /bin/bash \
-Psql -U postgres app_development\
+psql -U postgres app_development\
 
 
 

@@ -1,17 +1,20 @@
 import React from 'react'
 import { useState, useEffect } from "react";
-import { Form } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
 const Homepage = (props) => {
 
+    //User login jooks
     const [isLoggedIn, setIsLoggedIn] = useState(props.signed_in);
     const [userInfo, setUserInfo] = useState(props.user_info)
 
+    //Modal show hooks
     const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
     const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
+    const [showAddRestaurantModal, setShowAddRestaurantModal] = useState(false);
 
+    //Modal field value hooks
     const [loginModalFields, setLoginModalFields] = useState({
         name: ""
     });
@@ -24,19 +27,27 @@ const Homepage = (props) => {
         name: "",
         token: "",
     });
+    const [addRestaurantFields, setAddRestaurantFields] = useState({
+        name: "",
+        description: "",
+        location: (props.locations.length > 0) ? props.locations[0]["id"] : "",
+    });
 
+    //Functions for showing/closing the modal
     const handleCreateRoomClose = () => setShowCreateRoomModal(false);
     const handleCreateRoomShow = () => setShowCreateRoomModal(true);
     const handleJoinRoomClose = () => setShowJoinRoomModal(false);
     const handleJoinRoomShow = () => setShowJoinRoomModal(true);
+    const handleAddRestaurantClose = () => setShowAddRestaurantModal(false);
+    const handleAddRestaurantShow = () => setShowAddRestaurantModal(true);
 
+    //Get location info from db
     let locations = props.locations;
     let optionItems = locations.map((location) =>
             <option  value={location.id} key={location.name}>{location.name}</option>
         );
-    console.log(locations);
 
-
+    //Sign in as guest
     const signInAsGuest = () => {
         console.log(props.session);
 
@@ -65,18 +76,15 @@ const Homepage = (props) => {
         });
     }
 
-    function updateLocation(e)
-    {
-        console.log("test")
-        console.log(e.target.value)
-        //console.log(createRoomFields['location'])
-        //setCreateRoomFields({...createRoomFields, location: e.target.value})
-        
+    //Update Location fields 
+    function updateRoomLocation(e){
         setCreateRoomFields({...createRoomFields, location: parseInt(e.target.value)})
-
-        console.log(typeof(createRoomFields['location']))
-        console.log(createRoomFields['name'])
     }
+    function updateRestaurantLocation(e){
+        setAddRestaurantFields({...addRestaurantFields, location: parseInt(e.target.value)})
+    }
+
+    //Join room request
     const joinRoomRequest=() => {
         console.log ("you have joined with token ")
         fetch('/room/join', {
@@ -110,9 +118,8 @@ const Homepage = (props) => {
         })*/
     }
 
+    //Create Room Request
     const createRoomRequest=() => {
-        // console.log(createRoomFields["name"]);
-        // console.log(createRoomFields["location"]);
         fetch('/room', {
             method: 'POST', 
             headers: {
@@ -138,11 +145,39 @@ const Homepage = (props) => {
         });
     }
 
+    //Add Restaurant Request
+    const AddRestaurantRequest=() => {
+        fetch('/restaurant', {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            body: JSON.stringify({
+                name: addRestaurantFields["name"],
+                description: addRestaurantFields["description"],
+                location_id:addRestaurantFields["location"]
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data['status'] == 200) {
+                console.log("OK created restaurant")
+            } else {
+                console.log("Status: " + data['status']);
+            }
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
+    }
+
     return (
-        <div class="container">
+        <div className="container">
             <div>Welcome to our app {userInfo["name"]}</div>
-            <button type="button" class="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button>
-            <button type="button" class="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button>
+            <button type="button" className="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button>
+            <button type="button" className="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button>
+            <button type="button" className="btn btn-primary" onClick={handleAddRestaurantShow}>Add Restaurant</button>
 
             <Modal show={!isLoggedIn}>
                 <Modal.Header closeButton>
@@ -168,7 +203,7 @@ const Homepage = (props) => {
                 <Modal.Header closeButton>
                     <Modal.Title>Join Room</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+                <Modal.Body>Fill out this info so we can assign you to the correct room</Modal.Body>
 
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
@@ -193,9 +228,6 @@ const Homepage = (props) => {
                 </Modal.Footer>
             </Modal>
 
-
-
-
             <Modal show={showCreateRoomModal} onHide={handleCreateRoomClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Create Room</Modal.Title>
@@ -213,7 +245,7 @@ const Homepage = (props) => {
                         <span className="input-group-text" id="inputGroup-sizing-sm">Location</span>
                     </div>
                     <div>
-                            <select value={createRoomFields["location"]} onChange={updateLocation} >
+                            <select value={createRoomFields["location"]} onChange={updateRoomLocation} >
                                 {optionItems}
                             </select>
                     </div>
@@ -235,9 +267,46 @@ const Homepage = (props) => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            <Modal show={showAddRestaurantModal} onHide={handleAddRestaurantClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Add Restaurant</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Add a Restaurant :)</Modal.Body>
+
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                    </div>
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setAddRestaurantFields({...addRestaurantFields, name: e.target.value})} value={addRestaurantFields['name']}/>
+                </div>
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Decription</span>
+                    </div>
+                    <textarea type="text" className="form-control" rows = "3" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setAddRestaurantFields({...addRestaurantFields, description: e.target.value})} value={addRestaurantFields['desciption']}/>
+                </div>
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Location</span>
+                    </div>
+                    <div>
+                            <select value={addRestaurantFields["location"]} onChange={updateRestaurantLocation} >
+                                {optionItems}
+                            </select>
+                    </div>
+                </div>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleAddRestaurantClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={AddRestaurantRequest}>
+                        Add
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
-
 }
 
 export default Homepage 

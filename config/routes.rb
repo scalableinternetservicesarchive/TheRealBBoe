@@ -20,16 +20,20 @@ Rails.application.routes.draw do
 
     # room
     post 'room/join', to: 'rooms#join_room'
+    get 'room/votes/:room_token', to: 'rooms#room_votes'
     get 'room/:token', to: 'rooms#roompage'
     post 'room', to: 'rooms#create'
+    get 'rooms', to: 'rooms#index'
     
 
     # location
-    get 'addLocation/:name', to: 'locations#create'
+    post 'location', to: 'locations#create'
+    get 'locations', to: 'locations#index'
 
     # homepage
     root 'homepages#index'
     post 'guest_signin', to: 'homepages#signin_as_guest'
 
-    
+
+
 end

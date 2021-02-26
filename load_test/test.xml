@@ -12,23 +12,93 @@
     </servers>
 
     <load>
-        <arrivalphase phase="1" duration="15" unit="second">
+        <arrivalphase phase="1" duration="10" unit="second">
             <users arrivalrate="1" unit="second"/>
         </arrivalphase>
-        <arrivalphase phase="2" duration="30" unit="second">
+        <arrivalphase phase="2" duration="10" unit="second">
             <users arrivalrate="5" unit="second"/>
         </arrivalphase>
-        <arrivalphase phase="3" duration="15" unit="second">
+        <arrivalphase phase="3" duration="10" unit="second">
             <users arrivalrate="10" unit="second"/>
         </arrivalphase>
+
+        <!-- <arrivalphase phase="1" duration="1" unit="minute">
+            <users arrivalrate="1" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="2" duration="2" unit="minute">
+            <users arrivalrate="10" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="3" duration="3" unit="minute">
+            <users arrivalrate="50" unit="second"/>
+        </arrivalphase> -->
     </load>
 
     <sessions>
-        <session name="user_behavior_1" weight="0.2" type="ts_http">
-            <request> <http url="/" method="GET" /> </request>
-            <request> <http url="/guest_signin" method="POST" contents_from_file="guest.json" /> </request>
-            <request> <http url="/room" method="POST" contents_from_file="room.json" /> </request>
-            <request> <http url="/restaurants" method="GET" /> </request>
+        <session name="guest_room_creator" weight="1" type="ts_http">
+            <!-- home page (models queried for display in react) -->
+            <request>
+                <http url='/' method="GET" />
+            </request>
+
+
+            <!-- create guest user -->
+            <request>
+                <dyn_variable name="user_id" jsonpath="$.user_data.id"/>
+                <http url='/guest_signin/' method="POST"
+                    content_type='application/json'
+                    contents_from_file="guest.json" />
+            </request>
+
+
+            <!-- guest creates room -->
+            <request>
+                <dyn_variable name="room_token" jsonpath="$.room_token"/>
+                <dyn_variable name="room_id" jsonpath="$.id"/>
+                <http url="/room" method="POST"
+                    content_type='application/json'
+                    contents_from_file="room.json" />
+            </request>
+
+
+            <!-- add guest as member -->
+            <request subst="true">
+                <http url="/member" method="POST"
+                    content_type='application/json'
+                    contents='{
+                        &quot;user_id&quot;: &quot;%%_user_id%%&quot;,
+                        &quot;room_id&quot;: &quot;%%_room_id%%&quot;,
+                        &quot;is_host&quot;: &quot;true&quot;
+                    }' />
+            </request>
+
+
+            <!-- enter room populated with restaurants -->
+            <request subst="true">
+                <http url="/room/%%_room_token%%/?user_id=%%_user_id%%" method="GET" />
+            </request>
+
+
+            <!-- user takes time to make decision-->
+            <thinktime min="2" max="5" random="true"></thinktime>
+
+
+            <!-- user votes -->
+            <request subst="true">
+                <http url="/member/update_vote" method="POST"
+                    content_type='application/json'
+                    contents='{
+                        &quot;user_id&quot;: &quot;%%_user_id%%&quot;,
+                        &quot;token&quot;: &quot;%%_room_token%%&quot;,
+                        &quot;votes&quot;: &quot;3;4;5&quot;
+                    }' />
+            </request>
+
+
+            <!-- user views results -->
+            <request subst="true">
+                <http url="/room/votes/%%_room_token%%" method="GET" />
+            </request>
+
         </session>
     </sessions>
 </tsung>
