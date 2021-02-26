@@ -86,7 +86,7 @@ const Homepage = (props) => {
 
     //Join room request
     const joinRoomRequest=() => {
-        console.log ("you are joined with token ", )
+        console.log ("you have joined with token ")
         fetch('/room/join', {
             method: 'POST', 
             redirect: 'follow',
@@ -99,9 +99,23 @@ const Homepage = (props) => {
         })
         .then(response => {
             if (response.redirected) {
+                console.log("in redirection")
                 window.location.href = response.url;
             }
+            else{
+                alert("Invalid token; try again")
+            }
         })
+        /*.then(data => {
+            console.log("in data");
+            console.log(data);
+            console.log(status);
+            if (data['status'] == 200) {
+                console.log("OK")
+            } else if (data['status'] == 460){
+                console.log("Status: " + data['status']);
+            }
+        })*/
     }
 
     //Create Room Request

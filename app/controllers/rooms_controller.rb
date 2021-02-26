@@ -36,7 +36,12 @@ class RoomsController < ApplicationController
     end
 
     def join_room
+        if Room.exists?(token: params[:token])== false
+            #render json: {status: 469, token: params[:token]}
+            return
+        else
         redirect_to :action => "roompage", :token => params[:token]
+        end
     end
 
     def room_votes
