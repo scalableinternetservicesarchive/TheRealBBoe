@@ -6,16 +6,24 @@ class RoomsController < ApplicationController
             @room_token = params[:token]
             user_id = session[:user_id]
             room = Room.find_by(token: @room_token)
-            @location_id = room.location_id
+            
 
-            member = Member.find_by(user_id: user_id, room: room.id)
+            member = Member.find_by(user_id: user_id, room_id: room.id)
             if !member
-                member = Member.new(room_id: room.id, user_id: user_id, is_host: false)
+                member = Member.new(user_id: user_id, room_id: room.id, is_host: false)
                 if !member.save
                     render json: {status: 460}
                 end
             end
             @voted = member.votes != nil
+
+            location_id = room.location_id
+            restaurant_list = Restaurant.where(location_id: location_id)
+            @restaurants = {}
+            for restaurant in restaurant_list do
+                @restaurants[restaurant.id] = restaurant
+            end
+
         else
             redirect_to "/"
         end
@@ -23,6 +31,27 @@ class RoomsController < ApplicationController
 
     def join_room
         redirect_to :action => "roompage", :token => params[:token]
+    end
+
+    def room_votes
+
+        room_token = params[:room_token]
+        room_id = Room.find_by(token: room_token).id
+
+        members = Member.where(:room_id => room_id)
+
+        room_votes = {}
+        for member in members do 
+            member_votes = member.votes.split(";");
+            for loc_id in member_votes do 
+                if !room_votes.key?loc_id 
+                    room_votes[loc_id] = 0
+                end
+                room_votes[loc_id] += 1;
+            end 
+        end
+
+        render json: {status: 200, room_votes: room_votes}
     end
 
     def show 

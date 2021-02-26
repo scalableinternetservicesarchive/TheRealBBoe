@@ -11,28 +11,10 @@ const Roompage = (props) => {
     const [restaurants, setRestaurants] = useState(props.restaurants)
     const [selectedRestaurants, setSelectedRestaurants] = useState([]);
     const [doneVoting, setDoneVoting] = useState(props.voted);
+    const [roomVotes, setRoomVotes] = useState({});
     // Run Once at first render
     useEffect(() => {
     }, []);
-
-
-    console.log(...restaurants);
-    console.log(...selectedRestaurants);
-    console.log(props.voted)
-
-    const optionItems =  restaurants.map((r, index) => {
-        return (<Button 
-                    id={"restaurant-"+index} 
-                    variant= {buttonColor(r.id)}
-                    value={r.id} 
-                    key={r.name}
-                    onClick={clickRestaurantButton}>
-                {r.name} 
-                </Button>);
-    });
-
-    console.log(restaurants);
-    console.log(selectedRestaurants);
 
     function buttonColor(value) {
         return selectedRestaurants.includes(value.toString()) ? "success" : "secondary";
@@ -64,15 +46,74 @@ const Roompage = (props) => {
                 token: roomToken
             })
         })
+        .then(response => {
+            if(response.ok) {
+                return fetch('/room/votes/'+roomToken)
+            } else {
+                return Promise.reject(response);
+            }
+        })
         .then(response => response.json())
         .then(data => {
             console.log(data);
             setDoneVoting(true);
+            setRoomVotes(data["room_votes"]);
+            console.log(roomVotes);
         })
         .catch((error) => {
             console.error("Error: ", error);
         });
     }
+
+    ///asdfads
+    const voteResults = () => {
+        console.log("HELOOOOO");
+        console.log(roomVotes);
+
+        if (Object.keys(roomVotes).length === 0) {
+            var votelist = <div>NO VOTES</div>
+        } else {
+            // var voteList = roomVotes.map((location_id) => {
+            //     return(<li>{location[location_id].name}</li>)
+            // });
+
+            let votes = [];
+            console.log(restaurants);
+            for (let restaurant_id in roomVotes) {
+                console.log(restaurant_id);
+                votes.push([roomVotes[restaurant_id], restaurants[restaurant_id].name]);
+            }
+
+            votes.sort((a,b) => {
+                return b[0] - a[0];
+            })
+
+            var voteList = votes.map((data) => {
+                return(<li>{data[1]}:{data[0]}</li>)
+            })  
+        }
+
+
+        return (<ul>{voteList}</ul>);
+    }
+
+    const optionItems = () => {
+        var optionlist = [];
+        for (let rid in restaurants) {
+            let restaurant_name = restaurants[rid]["name"]
+            optionlist.push( <Button 
+                            id={"restaurant-"+rid} 
+                            variant= {buttonColor(rid)}
+                            value={rid} 
+                            key={restaurant_name}
+                            onClick={clickRestaurantButton}>
+                        {restaurant_name} 
+                        </Button>);
+        }
+
+        return (<div>{optionlist}</div>)
+    }
+
 
     return (
 
@@ -81,12 +122,12 @@ const Roompage = (props) => {
 
             { doneVoting 
               ? <div>
+                    {voteResults()}
                     <Button id="revote" onClick={e => setDoneVoting(false)}>Revote</Button>
+                    
                 </div>
               : <div>
-                    <div>
-                        {optionItems}
-                    </div>
+                    {optionItems()}
                     <div>
                         <Button id="submit-votes" onClick={submitVotes}>Submit</Button>
                     </div>
