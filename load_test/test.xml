@@ -24,7 +24,7 @@
     </load>
 
     <sessions>
-        <session name="guest_room_creator" weight="0.8" type="ts_http">
+        <session name="guest_room_creator" weight="1" type="ts_http">
             <!-- home page -->
             <request>
                 <http url='/' method="GET" />
@@ -50,12 +50,6 @@
             </request>
 
 
-            <!-- rooms page -->
-            <request>
-                <http url='/room/join' method="POST" />
-            </request>
-
-
             <!-- add guest as member -->
             <request subst="true">
                 <http url="/member" method="POST"
@@ -67,32 +61,28 @@
                     }' />
             </request>
 
-            <!-- enter room  -->
+
+            <!-- enter room populated with restaurants -->
             <request subst="true">
                 <http url="/room/%%_room_id%%/?user_id=%%_user_id%%" method="GET" />
             </request>
 
+
+            <!-- user makes decision-->
+            <thinktime min="2" max="5" random="true"></thinktime>
+
+
+            <!-- vote -->
+            <request subst="true">
+                <http url="/member/update_vote" method="POST"
+                    content_type='application/json'
+                    contents='{
+                        &quot;user_id&quot;: &quot;%%_user_id%%&quot;,
+                        &quot;token&quot;: &quot;%%_room_token%%&quot;,
+                        &quot;votes&quot;: &quot;3;4;5&quot;
+                    }' />
+            </request>
         </session>
 
-        <session name="restaurant_owner" weight="0.2" type="ts_http">
-            <!-- create guest user -->
-            <request>
-                <dyn_variable name="user_id" jsonpath="$.user_data.id"/>
-                <http url='/guest_signin/' method="POST"
-                    content_type='application/json'
-                    contents_from_file="guest.json" />
-            </request>
-
-            <!-- guest creates room -->
-            <request>
-                <dyn_variable name="room_token" jsonpath="$.room_token"/>
-                <dyn_variable name="room_id" jsonpath="$.id"/>
-                <http url="/room" method="POST"
-                    content_type='application/json'
-                    contents_from_file="room.json" />
-            </request>
-
-
-        </sessions>
     </sessions>
 </tsung>
