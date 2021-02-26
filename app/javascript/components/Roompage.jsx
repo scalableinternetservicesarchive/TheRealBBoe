@@ -11,7 +11,7 @@ const Roompage = (props) => {
     const [restaurants, setRestaurants] = useState(props.restaurants)
     const [selectedRestaurants, setSelectedRestaurants] = useState([]);
     const [doneVoting, setDoneVoting] = useState(props.voted);
-    const [roomVotes, setRoomVotes] = useState({});
+    const [roomVotes, setRoomVotes] = useState(props.votes);
     // Run Once at first render
     useEffect(() => {
     }, []);
