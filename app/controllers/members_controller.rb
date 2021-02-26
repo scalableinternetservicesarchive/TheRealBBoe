@@ -18,7 +18,7 @@ class MembersController < ApplicationController
         if @member.save
             render json: {status: 200}
         else
-            render json: {status: 450}
+            render json: {status: 550}
         end
 
         
