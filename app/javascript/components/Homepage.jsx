@@ -30,7 +30,7 @@ const Homepage = (props) => {
     const [addRestaurantFields, setAddRestaurantFields] = useState({
         name: "",
         description: "",
-        location: props.locations[0]["id"],
+        location: (props.locations.length > 0) ? props.locations[0]["id"] : "",
     });
 
     //Functions for showing/closing the modal

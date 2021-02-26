@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     get 'room/votes/:room_token', to: 'rooms#room_votes'
     get 'room/:token', to: 'rooms#roompage'
     post 'room', to: 'rooms#create'
+    get 'rooms', to: 'rooms#index'
     
 
     # location
