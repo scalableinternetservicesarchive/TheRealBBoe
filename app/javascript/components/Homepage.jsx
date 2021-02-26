@@ -29,7 +29,8 @@ const Homepage = (props) => {
     });
     const [addRestaurantFields, setAddRestaurantFields] = useState({
         name: "",
-        location: "",
+        description: "",
+        location: props.locations[0]["id"],
     });
 
     //Functions for showing/closing the modal
@@ -105,40 +106,14 @@ const Homepage = (props) => {
 
     //Create Room Request
     const createRoomRequest=() => {
-        // fetch('/room', {
-        //     method: 'POST', 
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     }, 
-        //     body: JSON.stringify({
-        //         room_name: createRoomFields["name"],
-        //         location_id: createRoomFields["location"]
-        //     })
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     console.log(data);
-        //     if (data['status'] == 200) {
-        //         console.log("OK")
-        //     } else {
-        //         console.log("Status: " + data['status']);
-        //     }
-        // })
-        // .catch((error) => {
-        //     console.error("Error: ", error);
-        // });
-    }
-
-    //Add Restaurant Request
-    const AddRestaurantRequest=() => {
         fetch('/room', {
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json'
             }, 
             body: JSON.stringify({
-                name: addRestaurantFields["name"],
-                location_id:addRestaurantFields["location"]
+                room_name: createRoomFields["name"],
+                location_id: createRoomFields["location"]
             })
         })
         .then(response => response.json())
@@ -147,6 +122,33 @@ const Homepage = (props) => {
             if (data['status'] == 200) {
                 console.log("OK")
                 setCreateRoomFields({...createRoomFields, token: data['room_token']})
+            } else {
+                console.log("Status: " + data['status']);
+            }
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
+    }
+
+    //Add Restaurant Request
+    const AddRestaurantRequest=() => {
+        fetch('/restaurant', {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            body: JSON.stringify({
+                name: addRestaurantFields["name"],
+                description: addRestaurantFields["description"],
+                location_id:addRestaurantFields["location"]
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data['status'] == 200) {
+                console.log("OK created restaurant")
             } else {
                 console.log("Status: " + data['status']);
             }
@@ -262,7 +264,13 @@ const Homepage = (props) => {
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
                     </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setCreateRoomFields({...createRoomFields, name: e.target.value})} value={createRoomFields['name']}/>
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setAddRestaurantFields({...addRestaurantFields, name: e.target.value})} value={addRestaurantFields['name']}/>
+                </div>
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Decription</span>
+                    </div>
+                    <textarea type="text" className="form-control" rows = "3" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setAddRestaurantFields({...addRestaurantFields, description: e.target.value})} value={addRestaurantFields['desciption']}/>
                 </div>
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
