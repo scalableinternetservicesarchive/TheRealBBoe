@@ -8,14 +8,14 @@ class RoomsController < ApplicationController
             room = Room.find_by(token: @room_token)
             @location_id = room.location_id
 
-            if !Member.find_by(user_id: user_id, room: room.id)
+            member = Member.find_by(user_id: user_id, room: room.id)
+            if !member
                 member = Member.new(room_id: room.id, user_id: user_id, is_host: false)
                 if !member.save
                     render json: {status: 460}
                 end
             end
-
-            
+            @voted = member.votes != nil
         else
             redirect_to "/"
         end

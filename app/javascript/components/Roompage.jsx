@@ -10,6 +10,7 @@ const Roompage = (props) => {
     const [roomToken, setRoomToken] = useState(props.room_token)
     const [restaurants, setRestaurants] = useState(props.restaurants)
     const [selectedRestaurants, setSelectedRestaurants] = useState([]);
+    const [doneVoting, setDoneVoting] = useState(props.voted);
     // Run Once at first render
     useEffect(() => {
     }, []);
@@ -17,6 +18,7 @@ const Roompage = (props) => {
 
     console.log(...restaurants);
     console.log(...selectedRestaurants);
+    console.log(props.voted)
 
     const optionItems =  restaurants.map((r, index) => {
         return (<Button 
@@ -65,6 +67,7 @@ const Roompage = (props) => {
         .then(response => response.json())
         .then(data => {
             console.log(data);
+            setDoneVoting(true);
         })
         .catch((error) => {
             console.error("Error: ", error);
@@ -75,12 +78,20 @@ const Roompage = (props) => {
 
         <div class="container">
             <br/><br/>"Hello in the room"
-            <div>            
-                {optionItems}                
-            </div>
-            <div>
-                <Button id="submit-votes" onClick={submitVotes}>Submit</Button>
-            </div>
+
+            { doneVoting 
+              ? <div>
+                    <Button id="revote" onClick={e => setDoneVoting(false)}>Revote</Button>
+                </div>
+              : <div>
+                    <div>
+                        {optionItems}
+                    </div>
+                    <div>
+                        <Button id="submit-votes" onClick={submitVotes}>Submit</Button>
+                    </div>
+                </div>                
+            }
         </div>
     );
 
