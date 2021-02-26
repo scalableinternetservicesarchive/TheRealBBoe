@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     post 'member', to: 'members#create'
     delete 'member', to: 'members#destroy'
     post 'member/update_vote', to: 'members#update_member_votes'
+    get 'get_rooms/:user_id', to: 'members#get_rooms'
 
     # restaurant operations
     get 'restaurant', to: 'restaurants#show'

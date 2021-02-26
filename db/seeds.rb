@@ -22,6 +22,7 @@ Room.find_or_create_by(token: "ABCDE", name: "Manzanita Floor 1 Decision", locat
 Member.find_or_create_by(room_id: 1, user_id: 1, is_host: false)
 Member.find_or_create_by(room_id: 1, user_id: 2, is_host: false)
 Member.find_or_create_by(room_id: 1, user_id: 3, is_host: true)
+Member.find_or_create_by(room_id: 2, user_id: 1, is_host: true)
 
 
 Restaurant.find_or_create_by(name: "Deja Vu", location_id: 1, description: "Indian food")
