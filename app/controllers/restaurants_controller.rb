@@ -16,9 +16,12 @@ class RestaurantsController < ApplicationController
     end	
 
     def create
-        @restaurant = Restaurant.new(restaurant_params)	
-        @restaurant.save	
-        render json: @restaurant
+      @restaurant = Restaurant.new(restaurant_params)
+      if @restaurant.save
+        render json: {status:200, restaurant:@restaurant} 
+      else
+        render json: {status: 500}
+      end 
     end
 
     def restaurant_params	
