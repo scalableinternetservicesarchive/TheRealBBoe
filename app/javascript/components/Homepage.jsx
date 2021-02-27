@@ -8,9 +8,6 @@ const Homepage = (props) => {
     //User login jooks
     const [isLoggedIn, setIsLoggedIn] = useState(props.signed_in);
     const [userInfo, setUserInfo] = useState(props.user_info)
-    const [userRooms, setUserRooms] = useState([])
-    const [showPrevRooms, setShowPrevRooms] = useState(false)
-    const [chosenRoom, setChosenRoom] = useState('')
 
     //Modal show hooks
     const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
@@ -38,10 +35,14 @@ const Homepage = (props) => {
     });
     const [signUpFields, setSignUpFields] = useState({
         name: "",
+        username: "",
         password: "",
         confirm_password: "",
         type_of_user: "",
     });
+    const [userRooms, setUserRooms] = useState([])
+    const [showPrevRooms, setShowPrevRooms] = useState(false)
+    const [chosenRoom, setChosenRoom] = useState('')
 
     //Functions for showing/closing the modal
     const handleCreateRoomClose = () => setShowCreateRoomModal(false);
@@ -107,6 +108,38 @@ const Homepage = (props) => {
         .then(data => {
             console.log(data);
             if (data['status'] == 200) {
+                let user_data = data['user_data'];
+                setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+                setIsLoggedIn(true);
+            } else {
+                console.log("Status: " + data['status']);
+            }
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
+    }
+
+    const signInAsAccountUser = () => {
+        console.log(props.session);
+
+        fetch('/signin', {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            body: JSON.stringify({
+                name: signUpFields['name'],
+                password: signUpFields['password']
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (response.status === 400) {
+                alert("Incorrect username or password")
+            }
+            else if (data['status'] == 200) {
                 let user_data = data['user_data'];
                 setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
                 setIsLoggedIn(true);
@@ -232,10 +265,45 @@ const Homepage = (props) => {
     const createAccount=(e) => {
         console.log("createAccount ");
         console.log(signUpFields['name']);
-        if(signUpFields['password']==""||signUpFields['confirm_password']==""||signUpFields['name']=="")
+        if(signUpFields['password']==""||signUpFields['confirm_password']==""||signUpFields['name']==""||signUpFields['username']=="")
             alert ("Please fill up all the fields");
         else if (signUpFields['password']!=signUpFields['confirm_password'])
             alert("Passwords are not matched");
+        else {
+            fetch('/user', {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                }, 
+                body: JSON.stringify({
+                    name: signUpFields['name'],
+                    username: signUpFields['username'],
+                    password: signUpFields['password']
+                })
+            })
+            .then(response =>  response.json().then(data => ({status: response.status, body: data})))
+            .then(result => {
+                console.log(result);
+                if (result.status === 400) {
+                    alert("Username already exists!")
+                }
+                else if (result.status === 201) {
+                    let user_data = result.body['user_data'];
+                    setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+                    setIsLoggedIn(true);
+                    setshowSignUpModal(false)
+
+                    // Clear the given inputs
+                    setSignUpFields({...signUpFields, name: "", username: "", password:"", confirm_password:"", type_of_user:""})
+                }
+                else {
+                    console.error("Error: ", error);
+                }
+            })
+            .catch((error) => {
+                console.error("Error: ", error);
+            });
+        } 
         
     }
     return (
@@ -393,6 +461,12 @@ const Homepage = (props) => {
                         <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
                     </div>
                     <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setSignUpFields({...signUpFields, name: e.target.value})} value={signUpFields['name']}/>
+                </div>
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Username</span>
+                    </div>
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setSignUpFields({...signUpFields, username: e.target.value})} value={signUpFields['username']}/>
                 </div>
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
