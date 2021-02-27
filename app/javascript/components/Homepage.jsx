@@ -47,26 +47,27 @@ const Homepage = (props) => {
     const handleCreateRoomClose = () => setShowCreateRoomModal(false);
     const handleCreateRoomShow = () => setShowCreateRoomModal(true);
     const handleJoinRoomClose = () => setShowJoinRoomModal(false);
+    
     const handleJoinRoomShow = () => {
         setShowJoinRoomModal(true);
-        fetch('/get_rooms/' + userInfo['id'], {
+
+        fetch('/get_rooms/', {
             method: 'GET', 
             headers: {
                 'Content-Type': 'application/json'
-            }, 
+            },
         })
         .then(response => response.json())
         .then(data => {
             console.log(data);
             if (data['status'] == 200) {
-                let rooms = data['rooms'];
+                let rooms = data['rooms']
                 let prevRoomOptions = rooms.map((room) =>
-                    <option  value={room.room_token} key={room.room_id}>{room.room_name}</option>
+                    <option value={room.room_token} key={room.room_id}>{room.room_name}</option>
                 );
 
                 if (prevRoomOptions.length !== 0) {
-                    // prevRoomOptions = [<option disabled selected value> -- select a previous room -- </option>].concat(prevRoomOptions)
-                    prevRoomOptions = [<option value="none" selected disabled hidden> Select an Option </option>].concat(prevRoomOptions) 
+                    prevRoomOptions = [<option key='0' value="none" selected disabled hidden> Select a Room </option>].concat(prevRoomOptions)
                     setUserRooms(prevRoomOptions)
                     setShowPrevRooms(true)
                 }
@@ -78,6 +79,7 @@ const Homepage = (props) => {
             console.error("Error: ", error);
         });
     }
+
     const handleAddRestaurantClose = () => setShowAddRestaurantModal(false);
     const handleAddRestaurantShow = () => setShowAddRestaurantModal(true);
     const handleSignUpClose = () => setshowSignUpModal(false);
