@@ -37,7 +37,7 @@ const Homepage = (props) => {
         name: "",
         password: "",
         confirm_password: "",
-        type_of_user: "",
+        type_of_user: "regular",
     });
 
     //Functions for showing/closing the modal
@@ -92,6 +92,8 @@ const Homepage = (props) => {
     //update user type field
     function updateUserTypeField(e){
         setSignUpFields({...signUpFields, type_of_user: e.target.value})
+        //console.log(e.target.value);
+        //console.log(signUpFields["type_of_user"])
     }
 
     function updateRestaurantLocation(e){
@@ -200,7 +202,7 @@ const Homepage = (props) => {
     }
     const createAccount=(e) => {
         console.log("createAccount ");
-        console.log(signUpFields['name']);
+        console.log(signUpFields['name'], " + ", signUpFields['type_of_user'], "+ ",signUpFields['password']);
         if(signUpFields['password']==""||signUpFields['confirm_password']==""||signUpFields['name']=="")
             alert ("Please fill up all the fields");
         else if (signUpFields['password']!=signUpFields['confirm_password'])
@@ -370,8 +372,9 @@ const Homepage = (props) => {
                     </div>
                     <div>
                             <select value={signUpFields["type_of_user"]} onChange={updateUserTypeField} >
-                                <option  value="owner" >Restaurant Owner</option>
                                 <option  value="regular" >Regular User</option>
+                                <option  value="owner" >Restaurant Owner</option>
+                                
                             </select>
                     </div>
                 </div>
