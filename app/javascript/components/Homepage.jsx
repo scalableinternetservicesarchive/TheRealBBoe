@@ -16,6 +16,7 @@ const Homepage = (props) => {
     const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
     const [showJoinRoomModal, setShowJoinRoomModal] = useState(false);
     const [showAddRestaurantModal, setShowAddRestaurantModal] = useState(false);
+    const [showSignUpModal, setshowSignUpModal] = useState(false);
 
     //Modal field value hooks
     const [loginModalFields, setLoginModalFields] = useState({
@@ -34,6 +35,12 @@ const Homepage = (props) => {
         name: "",
         description: "",
         location: (props.locations.length > 0) ? props.locations[0]["id"] : "",
+    });
+    const [signUpFields, setSignUpFields] = useState({
+        name: "",
+        password: "",
+        confirm_password: "",
+        type_of_user: "",
     });
 
     //Functions for showing/closing the modal
@@ -73,6 +80,7 @@ const Homepage = (props) => {
     }
     const handleAddRestaurantClose = () => setShowAddRestaurantModal(false);
     const handleAddRestaurantShow = () => setShowAddRestaurantModal(true);
+    const handleSignUpClose = () => setshowSignUpModal(false);
 
     //Get location info from db
     let locations = props.locations;
@@ -113,43 +121,29 @@ const Homepage = (props) => {
     function updateRoomLocation(e){
         setCreateRoomFields({...createRoomFields, location: parseInt(e.target.value)})
     }
-    function updateRestaurantLocation(e){
-        setAddRestaurantFields({...addRestaurantFields, location: parseInt(e.target.value)})
+
+    //update user type field
+    function updateUserTypeField(e){
+        setSignUpFields({...signUpFields, type_of_user: e.target.value})
     }
 
-    const getUserRooms = () => {
-        fetch('/get_rooms/', {
-            method: 'GET', 
-            headers: {
-                'Content-Type': 'application/json'
-            }, 
-            body: JSON.stringify({
-                user_id: userInfo['id']
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            if (data['status'] == 200) {
-                let rooms = data['rooms'];
-                let prevRoomOptions = rooms.map((room) =>
-                    <option  value={room.room_token} key={room.room_name}>{room.room_name}</option>
-                );
-                setUserRooms(prevRoomOptions)
-                setShowPrevRooms(true)
-            } else {
-                console.log("Status: " + data['status']);
-            }
-        })
-        .catch((error) => {
-            console.error("Error: ", error);
-        });
+    function updateRestaurantLocation(e){
+        setAddRestaurantFields({...addRestaurantFields, location: parseInt(e.target.value)})
     }
 
     function updateRoomChoice(e) {
         setChosenRoom(e.target.key)
         setJoinRoomFields({...joinRoomFields, token:e.target.value})
         console.log("chosen room token is " + e.target.value)
+    }
+
+    //for logging out
+    function handleLogOut(){
+        fetch('/log_out')
+        setIsLoggedIn(false);
+        if (!isLoggedIn){
+            console.log("logged out");
+        }
     }
 
     //Join room request
@@ -229,13 +223,26 @@ const Homepage = (props) => {
             console.error("Error: ", error);
         });
     }
-
+    const signUp=() => {
+        console.log("in sign up");
+        setshowSignUpModal(true);
+    }
+    const createAccount=(e) => {
+        console.log("createAccount ");
+        console.log(signUpFields['name']);
+        if(signUpFields['password']==""||signUpFields['confirm_password']==""||signUpFields['name']=="")
+            alert ("Please fill up all the fields");
+        else if (signUpFields['password']!=signUpFields['confirm_password'])
+            alert("Passwords are not matched");
+        
+    }
     return (
         <div className="container">
             <div>Welcome to our app {userInfo["name"]}</div>
             <button type="button" className="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button>
             <button type="button" className="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button>
             <button type="button" className="btn btn-primary" onClick={handleAddRestaurantShow}>Add Restaurant</button>
+            <button type="button" className="btn btn-primary" onClick={handleLogOut}>Log Out</button>
 
             <Modal show={!isLoggedIn}>
                 <Modal.Header closeButton>
@@ -253,6 +260,9 @@ const Homepage = (props) => {
                     <Button variant="primary" onClick={signInAsGuest}>
                     Sign In as a Guest
                     </Button>
+                    <Button variant="primary" onClick={signUp}>
+                    Sign Up
+                    </Button>
                 </Modal.Footer>
             </Modal>
 
@@ -262,13 +272,7 @@ const Homepage = (props) => {
                     <Modal.Title>Join Room</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>Fill out this info so we can assign you to the correct room</Modal.Body>
-
-                <div className="input-group input-group-sm mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
-                    </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, name: e.target.value})} value={joinRoomFields['name']}/>
-                </div>
+                
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
@@ -371,6 +375,53 @@ const Homepage = (props) => {
                     </Button>
                     <Button variant="primary" onClick={AddRestaurantRequest}>
                         Add
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+
+            <Modal show={showSignUpModal} onHide={handleSignUpClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Sign up!</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Hey, create your account..</Modal.Body>
+
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                    </div>
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setSignUpFields({...signUpFields, name: e.target.value})} value={signUpFields['name']}/>
+                </div>
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Password</span>
+                    </div>
+                    <input type="password" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setSignUpFields({...signUpFields, password: e.target.value})} value={signUpFields['password']}/>
+                </div>
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Confirm Password</span>
+                    </div>
+                    <input type="password" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setSignUpFields({...signUpFields, confirm_password: e.target.value})} value={signUpFields['confirm_password']}/>
+                </div>
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">User Type</span>
+                    </div>
+                    <div>
+                            <select value={signUpFields["type_of_user"]} onChange={updateUserTypeField} >
+                                <option  value="owner" >Restaurant Owner</option>
+                                <option  value="regular" >Regular User</option>
+                            </select>
+                    </div>
+                </div>
+                
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleSignUpClose}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={createAccount}>
+                        Create
                     </Button>
                 </Modal.Footer>
             </Modal>

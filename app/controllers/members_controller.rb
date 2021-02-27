@@ -10,20 +10,23 @@ class MembersController < ApplicationController
     def get_rooms 
         #the user id will be taken from the session
         @user_id = session[:user_id]
-       # @user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
+        #@user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
         @room_ids = Member.where(user_id: @user_id).pluck(:room_id)
-        
-        roomList = []
-        for i in 0..@room_ids.size-1
-                @room_id= @room_ids[i]
-                @room = Room.find_by(id: @room_id)
-                temp = {}
-                temp.store("room_id",@room.id)
-                temp.store("room_name", @room.name) 
-                temp.store("room_token", @room.token)
-                roomList.push(temp)
+        if @room_ids !=[]
+            @roomList = []
+            for i in 0..@room_ids.size-1
+                    @room_id= @room_ids[i]
+                    @room = Room.find_by(id: @room_id)
+                    temp = {}
+                    temp.store("room_id",@room.id)
+                    temp.store("room_name", @room.name) 
+                    temp.store("room_token", @room.token)
+                    @roomList.push(temp)
+            end
+            render json: {status: 200, rooms: @roomList}
+        else
+            render json: {status: 460}
         end
-        render json: {status: 200, rooms: roomList}
     end
 
     def update_member_votes

@@ -12,7 +12,7 @@ Rails.application.routes.draw do
     post 'member', to: 'members#create'
     delete 'member', to: 'members#destroy'
     post 'member/update_vote', to: 'members#update_member_votes'
-    get 'get_rooms/:user_id', to: 'members#get_rooms'
+    get 'get_rooms', to: 'members#get_rooms'
 
     # restaurant operations
     get 'restaurant', to: 'restaurants#show'
@@ -34,6 +34,7 @@ Rails.application.routes.draw do
     # homepage
     root 'homepages#index'
     post 'guest_signin', to: 'homepages#signin_as_guest'
+    get 'log_out', to: 'homepages#log_out'
 
 
 

@@ -16,6 +16,11 @@ class HomepagesController < ApplicationController
     end
   end
 
+  def log_out
+    session.delete(:user_id)
+    render json: {status: 200}
+  end
+
   def signin_as_guest
   	@guest_name = params[:name]
   	@user = User.new(username: nil, password: nil, name: @guest_name, is_auth: false)
