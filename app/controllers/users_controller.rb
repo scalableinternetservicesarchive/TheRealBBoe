@@ -25,10 +25,15 @@ class UsersController < ApplicationController
     end	
 
     def create	
-        @user = User.new(user_params)	
-        @user.is_auth = user_params.has_key?(:password)	
-        @user.save	
-        render json: @user
+        @username = params[:username]
+        if User.find_by(username: @username)
+            render json: {}, status: 400
+        else
+            @user = User.new(user_params)	
+            @user.is_auth = user_params.has_key?(:password)	
+            @user.save
+            render json: {user_data: {id: @user.id, name: @user.name, username: @user.username}}, status: 201
+        end
     end	
 
     def user_params	

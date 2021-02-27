@@ -32,4 +32,17 @@ class HomepagesController < ApplicationController
      	render json: {status: 469, params: params}
     end
   end
+
+  def signin
+  	@name = params[:username]
+    @password = params[:password]
+  	@user = User.find_by(username: @name, password: @password)
+
+    if @user
+    	session[:user_id] = @user.id
+     	render json: {user_data: {id: @user.id, name: @user.name, username: @user.username}}, status: 200
+    else
+     	render json: {params: params}, status: 469
+    end
+  end
 end
