@@ -84,6 +84,15 @@ const Homepage = (props) => {
         setAddRestaurantFields({...addRestaurantFields, location: parseInt(e.target.value)})
     }
 
+    //for logging out
+    function handleLogOut(){
+        fetch('/log_out')
+        setIsLoggedIn(false);
+        if (!isLoggedIn){
+            console.log("logged out");
+        }
+    }
+
     //Join room request
     const joinRoomRequest=() => {
         console.log ("you have joined with token ")
@@ -178,6 +187,7 @@ const Homepage = (props) => {
             <button type="button" className="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button>
             <button type="button" className="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button>
             <button type="button" className="btn btn-primary" onClick={handleAddRestaurantShow}>Add Restaurant</button>
+            <button type="button" className="btn btn-primary" onClick={handleLogOut}>Log Out</button>
 
             <Modal show={!isLoggedIn}>
                 <Modal.Header closeButton>
@@ -204,13 +214,7 @@ const Homepage = (props) => {
                     <Modal.Title>Join Room</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>Fill out this info so we can assign you to the correct room</Modal.Body>
-
-                <div className="input-group input-group-sm mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
-                    </div>
-                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, name: e.target.value})} value={joinRoomFields['name']}/>
-                </div>
+                
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm">Room Token</span>
