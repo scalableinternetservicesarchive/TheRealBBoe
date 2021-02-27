@@ -1,12 +1,14 @@
 class HomepagesController < ApplicationController
   def index
     @user_info = {
-      "name": ""
+      "name": "",
+      "id": ""
     }
     @signed_in = false 
     if session.key?:user_id
       if User.exists?(id: session[:user_id])
         @user_info["name"] = User.find(session[:user_id]).name
+        @user_info["id"] = session[:user_id]
         @signed_in = true
       else
         session.delete(:user_id)
