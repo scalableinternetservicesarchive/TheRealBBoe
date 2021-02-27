@@ -8,6 +8,9 @@ const Homepage = (props) => {
     //User login jooks
     const [isLoggedIn, setIsLoggedIn] = useState(props.signed_in);
     const [userInfo, setUserInfo] = useState(props.user_info)
+    const [userRooms, setUserRooms] = useState([])
+    const [showPrevRooms, setShowPrevRooms] = useState(false)
+    const [chosenRoom, setChosenRoom] = useState('')
 
     //Modal show hooks
     const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
@@ -44,7 +47,39 @@ const Homepage = (props) => {
     const handleCreateRoomClose = () => setShowCreateRoomModal(false);
     const handleCreateRoomShow = () => setShowCreateRoomModal(true);
     const handleJoinRoomClose = () => setShowJoinRoomModal(false);
-    const handleJoinRoomShow = () => setShowJoinRoomModal(true);
+    
+    const handleJoinRoomShow = () => {
+        setShowJoinRoomModal(true);
+
+        fetch('/get_rooms/', {
+            method: 'GET', 
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data['status'] == 200) {
+                let rooms = data['rooms']
+                let prevRoomOptions = rooms.map((room) =>
+                    <option value={room.room_token} key={room.room_id}>{room.room_name}</option>
+                );
+
+                if (prevRoomOptions.length !== 0) {
+                    prevRoomOptions = [<option key='0' value="none" selected disabled hidden> Select a Room </option>].concat(prevRoomOptions)
+                    setUserRooms(prevRoomOptions)
+                    setShowPrevRooms(true)
+                }
+            } else {
+                console.log("Status: " + data['status']);
+            }
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
+    }
+
     const handleAddRestaurantClose = () => setShowAddRestaurantModal(false);
     const handleAddRestaurantShow = () => setShowAddRestaurantModal(true);
     const handleSignUpClose = () => setshowSignUpModal(false);
@@ -73,7 +108,7 @@ const Homepage = (props) => {
             console.log(data);
             if (data['status'] == 200) {
                 let user_data = data['user_data'];
-                setUserInfo({...userInfo, name: user_data['name']});
+                setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
                 setIsLoggedIn(true);
             } else {
                 console.log("Status: " + data['status']);
@@ -98,6 +133,12 @@ const Homepage = (props) => {
         setAddRestaurantFields({...addRestaurantFields, location: parseInt(e.target.value)})
     }
 
+    function updateRoomChoice(e) {
+        setChosenRoom(e.target.key)
+        setJoinRoomFields({...joinRoomFields, token:e.target.value})
+        console.log("chosen room token is " + e.target.value)
+    }
+
     //for logging out
     function handleLogOut(){
         fetch('/log_out')
@@ -109,7 +150,7 @@ const Homepage = (props) => {
 
     //Join room request
     const joinRoomRequest=() => {
-        console.log ("you have joined with token ")
+        console.log ("you have joined with token " + joinRoomFields["token"])
         fetch('/room/join', {
             method: 'POST', 
             redirect: 'follow',
@@ -129,16 +170,6 @@ const Homepage = (props) => {
                 alert("Invalid token; try again")
             }
         })
-        /*.then(data => {
-            console.log("in data");
-            console.log(data);
-            console.log(status);
-            if (data['status'] == 200) {
-                console.log("OK")
-            } else if (data['status'] == 460){
-                console.log("Status: " + data['status']);
-            }
-        })*/
     }
 
     //Create Room Request
@@ -250,6 +281,17 @@ const Homepage = (props) => {
                     </div>
                     <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, token: e.target.value})} value={joinRoomFields['token']}/>
                 </div>
+                <div style={{display: showPrevRooms ? 'block' : 'none'}} className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Previous Rooms</span>
+                    </div>
+                    <div>
+                        <select onChange={updateRoomChoice} >
+                            {userRooms}
+                        </select>
+                    </div>
+                </div>
+                
 
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleJoinRoomClose}>
