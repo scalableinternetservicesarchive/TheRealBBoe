@@ -4,14 +4,14 @@ import { Form } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-
-
 const Roompage = (props) => {
     const [roomToken, setRoomToken] = useState(props.room_token)
     const [restaurants, setRestaurants] = useState(props.restaurants)
     const [selectedRestaurants, setSelectedRestaurants] = useState([]);
     const [doneVoting, setDoneVoting] = useState(props.voted);
     const [roomVotes, setRoomVotes] = useState(props.votes);
+    const [roomParticipants, setRoomParticipants] = useState(props.participants)
+
     // Run Once at first render
     useEffect(() => {
     }, []);
@@ -65,18 +65,34 @@ const Roompage = (props) => {
         });
     }
 
+    const listParticipants = () => {
+        console.log(roomParticipants)
+        if (Object.keys(roomParticipants).length === 0) {
+            var participantsList = <div>No Participants</div>
+        }
+        else {
+            let memberIcons = [];
+            for (let member in roomParticipants) {
+                // If member voted alread
+                if (roomParticipants[member]) {
+                    memberIcons.push(<li style={{listStyleType: "none"}} ><i class='fas fa-user-check' style={{color: "green"}}></i>{member}</li>)
+                }
+                else {
+                    memberIcons.push(<li style={{listStyleType: "none"}}><i class='fas fa-user-times' style={{color: "red"}}></i>{member}</li>)
+                }
+            }
+
+            return (<ul>{memberIcons}</ul>);
+        }
+    }
+
     ///asdfads
     const voteResults = () => {
-        console.log("HELOOOOO");
         console.log(roomVotes);
 
         if (Object.keys(roomVotes).length === 0) {
             var votelist = <div>NO VOTES</div>
         } else {
-            // var voteList = roomVotes.map((location_id) => {
-            //     return(<li>{location[location_id].name}</li>)
-            // });
-
             let votes = [];
             console.log(restaurants);
             for (let restaurant_id in roomVotes) {
@@ -114,14 +130,17 @@ const Roompage = (props) => {
         return (<div>{optionlist}</div>)
     }
 
-
     return (
-
         <div class="container">
-            <br/><br/>"Hello in the room"
+
+            <div className = "participants">
+                <h4>Participants</h4>
+                {listParticipants()}
+            </div>
 
             { doneVoting 
               ? <div>
+                  <h3>Results</h3>
                     {voteResults()}
                     <Button id="revote" onClick={e => setDoneVoting(false)}>Revote</Button>
                     

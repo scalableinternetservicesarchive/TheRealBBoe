@@ -22,6 +22,7 @@ class RoomsController < ApplicationController
             end
             @voted = member.votes != nil
             @votes = get_votes_in_room(@room_token)
+            @participants = get_participants(room.id)
 
             location_id = room.location_id
             restaurant_list = Restaurant.where(location_id: location_id)
@@ -53,6 +54,24 @@ class RoomsController < ApplicationController
         render json: {status: 200, room_votes: room_votes}
     end
 
+    def get_participants(room_id)
+        members = Member.where(:room_id => room_id)
+
+        participants = {}
+        for member in members do
+            if member != nil
+                user  = User.find_by(id: member.user_id)
+                if member.votes != nil
+                    participants[user.name] = true;
+                else
+                    participants[user.name] = false;
+                end
+            end
+        end
+
+        return participants
+    end
+
     def get_votes_in_room(room_token)
         room_id = Room.find_by(token: room_token).id
         members = Member.where(:room_id => room_id)
@@ -72,7 +91,6 @@ class RoomsController < ApplicationController
 
         return room_votes
     end
-
 
     def show 
         if params.has_key?(:id)
