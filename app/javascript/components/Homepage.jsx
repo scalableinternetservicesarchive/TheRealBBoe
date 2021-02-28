@@ -159,21 +159,23 @@ const Homepage = (props) => {
                 'Content-Type': 'application/json'
             }, 
             body: JSON.stringify({
-                name: signUpFields['name'],
-                password: signUpFields['password']
+                username: loginModalFields['name'],
+                password: loginModalFields['password']
             })
         })
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            if (response.status === 400) {
+            if (data['status'] == 469) {
                 alert("Incorrect username or password")
             }
             else if (data['status'] == 200) {
                 let user_data = data['user_data'];
                 setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+                setGuestNameFields({...guestNameField, name: user_data['username']});
                 setIsLoggedIn(true);
                 setIsInUserTable(true);
+                setLoginModalFields({...loginModalFields, name: "", password:""})
 
             } else {
                 console.log("Status: " + data['status']);
@@ -193,6 +195,8 @@ const Homepage = (props) => {
             //setIsInUserTable(true);
             console.log(loginModalFields['name']);
             //setUserInfo({...userInfo, name: user_data['name']});
+            signInAsAccountUser();
+            
         }
         
        
@@ -221,7 +225,7 @@ const Homepage = (props) => {
 
     //for logging out
     function handleLogOut(){
-        if(isInUserTable)
+       /* if(isInUserTable)
             {
                 console.log("is in session")
                 fetch('/log_out')
@@ -229,9 +233,13 @@ const Homepage = (props) => {
         else
         {
             console.log ("a guest");
-        }
-        
+            fetch('/log_out')
+        }*/
+        fetch('/log_out');
         setIsLoggedIn(false);
+        setIsGuestUser(false);
+        setUserInfo({...userInfo, name: "", id: ""});
+        setGuestNameFields({...guestNameField, name: ""});
         if (!isLoggedIn){
             console.log("logged out");
         }
@@ -385,14 +393,17 @@ const Homepage = (props) => {
         
     }
     return (
+       
         <div className="container">
             <div>Welcome to our app {userInfo["name"]}</div>
-            <div className="input-group input-group-sm mb-3">
+            {isGuestUser&&
+            <div className="input-group input-group-sm mb-3" >
                     <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                        <span className="input-group-text" id="inputGroup-sizing-sm">User Name</span>
                     </div>
                     <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setGuestNameFields({...guestNameField, name: e.target.value})} value={guestNameField['name']}/>
                 </div>
+}
             
             <button type="button" className="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button><br/><br/>
             <button type="button" className="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button><br/><br/>
@@ -403,10 +414,10 @@ const Homepage = (props) => {
                 <Modal.Header >
                     <Modal.Title>Sign-in to Proceed</Modal.Title>
                 </Modal.Header>
-
+                
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                        <span className="input-group-text" id="inputGroup-sizing-sm">User Name</span>
                     </div>
                     <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setLoginModalFields({...loginModalFields, name: e.target.value})} value={loginModalFields['name']}/>
                 </div>
