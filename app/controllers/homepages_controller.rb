@@ -1,12 +1,14 @@
 class HomepagesController < ApplicationController
   def index
     @user_info = {
-      "name": ""
+      "name": "",
+      "id": ""
     }
     @signed_in = false 
     if session.key?:user_id
       if User.exists?(id: session[:user_id])
         @user_info["name"] = User.find(session[:user_id]).name
+        @user_info["id"] = session[:user_id]
         @signed_in = true
       else
         session.delete(:user_id)
@@ -28,6 +30,19 @@ class HomepagesController < ApplicationController
      	render json: {status: 200, user_data: {id: @user.id, name: @user.name, username: @user.username}}
     else
      	render json: {status: 469, params: params}
+    end
+  end
+
+  def signin
+  	@name = params[:username]
+    @password = params[:password]
+  	@user = User.find_by(username: @name, password: @password)
+
+    if @user
+    	session[:user_id] = @user.id
+     	render json: {user_data: {id: @user.id, name: @user.name, username: @user.username}}, status: 200
+    else
+     	render json: {params: params}, status: 469
     end
   end
 end

@@ -23,7 +23,7 @@ class MembersController < ApplicationController
                     temp.store("room_token", @room.token)
                     @roomList.push(temp)
             end
-            render json: @roomList
+            render json: {status: 200, rooms: @roomList}
         else
             render json: {status: 460}
         end

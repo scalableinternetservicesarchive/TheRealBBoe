@@ -44,18 +44,54 @@ const Homepage = (props) => {
     });
     const [signUpFields, setSignUpFields] = useState({
         name: "",
+        username: "",
         password: "",
         confirm_password: "",
         type_of_user: "regular",
     });
+    const [userRooms, setUserRooms] = useState([])
+    const [showPrevRooms, setShowPrevRooms] = useState(false)
+    const [chosenRoom, setChosenRoom] = useState('')
 
     //Functions for showing/closing the modal
     const handleCreateRoomClose = () => setShowCreateRoomModal(false);
     const handleCreateRoomShow = () => setShowCreateRoomModal(true);
     const handleJoinRoomClose = () => setShowJoinRoomModal(false);
+
+    
     const handleJoinRoomShow = () => {
         setShowJoinRoomModal(true);
+
+        fetch('/get_rooms/', {
+            method: 'GET', 
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data['status'] == 200) {
+                let rooms = data['rooms']
+                let prevRoomOptions = rooms.map((room) =>
+                    <option value={room.room_token} key={room.room_id}>{room.room_name}</option>
+                );
+
+                if (prevRoomOptions.length !== 0) {
+                    prevRoomOptions = [<option key='0' value="none" selected disabled hidden> Select a Room </option>].concat(prevRoomOptions)
+                    setUserRooms(prevRoomOptions)
+                    setShowPrevRooms(true)
+                }
+            } else {
+                console.log("Status: " + data['status']);
+            }
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
     }
+
+
     const handleAddRestaurantClose = () => setShowAddRestaurantModal(false);
     const handleAddRestaurantShow = () => setShowAddRestaurantModal(true);
     const handleSignUpClose = () => setshowSignUpModal(false);
@@ -98,9 +134,47 @@ const Homepage = (props) => {
             if (data['status'] == 200) {
                 console.log("Status: " + data['status']);
                 let user_data = data['user_data'];
+
                 //setUserInfo({...userInfo, name: user_data['name']});
                // setIsLoggedIn(true);
                setIsInUserTable(true);
+
+               // setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+               // setIsLoggedIn(true);
+            } else {
+                console.log("Status: " + data['status']);
+            }
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
+    }
+
+    const signInAsAccountUser = () => {
+        console.log(props.session);
+
+        fetch('/signin', {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            body: JSON.stringify({
+                name: signUpFields['name'],
+                password: signUpFields['password']
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (response.status === 400) {
+                alert("Incorrect username or password")
+            }
+            else if (data['status'] == 200) {
+                let user_data = data['user_data'];
+                setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+                setIsLoggedIn(true);
+                setIsInUserTable(true);
+
             } else {
                 console.log("Status: " + data['status']);
             }
@@ -139,6 +213,12 @@ const Homepage = (props) => {
         setAddRestaurantFields({...addRestaurantFields, location: parseInt(e.target.value)})
     }
 
+    function updateRoomChoice(e) {
+        setChosenRoom(e.target.key)
+        setJoinRoomFields({...joinRoomFields, token:e.target.value})
+        console.log("chosen room token is " + e.target.value)
+    }
+
     //for logging out
     function handleLogOut(){
         if(isInUserTable)
@@ -159,13 +239,15 @@ const Homepage = (props) => {
 
     //Join room request
     const joinRoomRequest=() => {
+
        
         if(isGuestUser&&!isInUserTable)
         {
             console.log("guest user: join room");
             signInAsGuest();
         }
-        console.log ("you have joined with token ")
+        console.log ("you have joined with token " + joinRoomFields["token"])
+
         fetch('/room/join', {
             method: 'POST', 
             redirect: 'follow',
@@ -185,16 +267,6 @@ const Homepage = (props) => {
                 alert("Invalid token; try again")
             }
         })
-        /*.then(data => {
-            console.log("in data");
-            console.log(data);
-            console.log(status);
-            if (data['status'] == 200) {
-                console.log("OK")
-            } else if (data['status'] == 460){
-                console.log("Status: " + data['status']);
-            }
-        })*/
     }
 
     //Create Room Request
@@ -266,11 +338,50 @@ const Homepage = (props) => {
     }
     const createAccount=(e) => {
         console.log("createAccount ");
+
         console.log(signUpFields['name'], " + ", signUpFields['type_of_user'], "+ ",signUpFields['password']);
         if(signUpFields['password']==""||signUpFields['confirm_password']==""||signUpFields['name']=="")
+
+        console.log(signUpFields['name']);
+        if(signUpFields['password']==""||signUpFields['confirm_password']==""||signUpFields['name']==""||signUpFields['username']=="")
             alert ("Please fill up all the fields");
         else if (signUpFields['password']!=signUpFields['confirm_password'])
             alert("Passwords are not matched");
+        else {
+            fetch('/user', {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                }, 
+                body: JSON.stringify({
+                    name: signUpFields['name'],
+                    username: signUpFields['username'],
+                    password: signUpFields['password']
+                })
+            })
+            .then(response =>  response.json().then(data => ({status: response.status, body: data})))
+            .then(result => {
+                console.log(result);
+                if (result.status === 400) {
+                    alert("Username already exists!")
+                }
+                else if (result.status === 201) {
+                    let user_data = result.body['user_data'];
+                    setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+                    setIsLoggedIn(true);
+                    setshowSignUpModal(false)
+
+                    // Clear the given inputs
+                    setSignUpFields({...signUpFields, name: "", username: "", password:"", confirm_password:"", type_of_user:""})
+                }
+                else {
+                    console.error("Error: ", error);
+                }
+            })
+            .catch((error) => {
+                console.error("Error: ", error);
+            });
+        } 
         
     }
     return (
@@ -336,6 +447,17 @@ const Homepage = (props) => {
                     </div>
                     <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setJoinRoomFields({...joinRoomFields, token: e.target.value})} value={joinRoomFields['token']}/>
                 </div>
+                <div style={{display: showPrevRooms ? 'block' : 'none'}} className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Previous Rooms</span>
+                    </div>
+                    <div>
+                        <select onChange={updateRoomChoice} >
+                            {userRooms}
+                        </select>
+                    </div>
+                </div>
+                
 
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleJoinRoomClose}>
@@ -437,6 +559,12 @@ const Homepage = (props) => {
                         <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
                     </div>
                     <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setSignUpFields({...signUpFields, name: e.target.value})} value={signUpFields['name']}/>
+                </div>
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Username</span>
+                    </div>
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setSignUpFields({...signUpFields, username: e.target.value})} value={signUpFields['username']}/>
                 </div>
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
