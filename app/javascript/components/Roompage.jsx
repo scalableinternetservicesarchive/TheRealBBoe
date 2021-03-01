@@ -57,6 +57,8 @@ const Roompage = (props) => {
         .then(data => {
             console.log(data);
             setDoneVoting(true);
+            var user_name = props.user_name
+            setRoomParticipants({...roomParticipants, [user_name]: true})
             setRoomVotes(data["room_votes"]);
             console.log(roomVotes);
         })
@@ -133,19 +135,23 @@ const Roompage = (props) => {
     return (
         <div class="container">
 
-            <div className = "participants">
-                <h4>Participants</h4>
-                {listParticipants()}
-            </div>
-
             { doneVoting 
               ? <div>
-                  <h3>Results</h3>
+                    <div className = "participants">
+                        <h4>Participants</h4>
+                        {listParticipants()}
+                    </div>
+
+                    <h3>Results</h3>
                     {voteResults()}
                     <Button id="revote" onClick={e => setDoneVoting(false)}>Revote</Button>
                     
                 </div>
               : <div>
+                    <div className = "participants">
+                        <h4>Participants</h4>
+                        {listParticipants()}
+                    </div>
                     {optionItems()}
                     <div>
                         <Button id="submit-votes" onClick={submitVotes}>Submit</Button>

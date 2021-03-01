@@ -11,8 +11,8 @@ class RoomsController < ApplicationController
             @room_token = params[:token]
             user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
             room = Room.find_by(token: @room_token)
+            @user_name = User.find_by(id: user_id).name
             
-
             member = Member.find_by(user_id: user_id, room_id: room.id)
             if !member
                 member = Member.new(user_id: user_id, room_id: room.id, is_host: false)
