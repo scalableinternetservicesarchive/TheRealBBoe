@@ -12,7 +12,7 @@ const Homepage = (props) => {
 
     //Guest User
     const [isGuestUser, setIsGuestUser] =useState(false);
-    const [isInUserTable, setIsInUserTable] =useState(false);
+   // const [isInUserTable, setIsInUserTable] =useState(false);
 
     //Modal show hooks
     const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
@@ -105,14 +105,14 @@ const Homepage = (props) => {
     //continue as guest button click
     const continueAsGuest = () => {
         console.log(isGuestUser);
-        console.log(isGuestUser);
+        console.log(isLoggedIn);
         setIsGuestUser(true);
         //isGuestUser = true;
-        setIsLoggedIn(true);
-        
+        //setIsLoggedIn(true);
+        signInAsGuest();
         console.log("in continue as guest");
         console.log(isGuestUser);
-        console.log(isGuestUser);
+        console.log(isLoggedIn);
     }
 
     //Sign in as guest
@@ -136,12 +136,13 @@ const Homepage = (props) => {
                 let user_data = data['user_data'];
 
                 //setUserInfo({...userInfo, name: user_data['name']});
-               // setIsLoggedIn(true);
-               setIsInUserTable(true);
+               //setIsLoggedIn(true);
+              // setIsInUserTable(true);
 
-               // setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
-               // setIsLoggedIn(true);
+               setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+               setIsLoggedIn(true);
             } else {
+                alert("error in signin");
                 console.log("Status: " + data['status']);
             }
         })
@@ -249,13 +250,13 @@ const Homepage = (props) => {
     const joinRoomRequest=() => {
 
        
-        if(isGuestUser&&!isInUserTable)
+       /* if(isGuestUser&&!isInUserTable)
         {
             console.log("guest user: join room");
             signInAsGuest();
-        }
-        console.log ("you have joined with token " + joinRoomFields["token"])
-
+        }*/
+        console.log ("you have joined with token " + joinRoomFields["token"]);
+        console.log(props.session);
         fetch('/room/join', {
             method: 'POST', 
             redirect: 'follow',
@@ -279,11 +280,11 @@ const Homepage = (props) => {
 
     //Create Room Request
     const createRoomRequest=() => {
-        if(isGuestUser&&!isInUserTable)
+       /* if(isGuestUser&&!isInUserTable)
         {
             console.log("guest user: create room")
             signInAsGuest();
-        }
+        }*/
         fetch('/room', {
             method: 'POST', 
             headers: {
@@ -311,11 +312,11 @@ const Homepage = (props) => {
 
     //Add Restaurant Request
     const AddRestaurantRequest=() => {
-        if(isGuestUser&&!isInUserTable)
+       /* if(isGuestUser&&!isInUserTable)
         {
             console.log("guest user: add restaurant")
             signInAsGuest();
-        }
+        }*/
         fetch('/restaurant', {
             method: 'POST', 
             headers: {
