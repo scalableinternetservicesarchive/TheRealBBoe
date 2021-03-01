@@ -7,8 +7,8 @@
     </clients>
 
     <servers>
-        <!-- <server host="mli01.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="3000" type="tcp"/> -->
-        <server host="localhost" port="3000" type="tcp"/>
+        <server host="demo2.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/>
+        <!-- <server host="localhost" port="3000" type="tcp"/> -->
     </servers>
 
     <load>
