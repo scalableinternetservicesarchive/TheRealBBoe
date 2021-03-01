@@ -35,6 +35,7 @@ Rails.application.routes.draw do
     root 'homepages#index'
     post 'guest_signin', to: 'homepages#signin_as_guest'
     get 'log_out', to: 'homepages#log_out'
+    post 'signin', to: 'homepages#signin'
 
 
 

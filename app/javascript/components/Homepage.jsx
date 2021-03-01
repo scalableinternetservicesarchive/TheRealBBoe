@@ -7,7 +7,12 @@ const Homepage = (props) => {
 
     //User login jooks
     const [isLoggedIn, setIsLoggedIn] = useState(props.signed_in);
-    const [userInfo, setUserInfo] = useState(props.user_info)
+    const [userInfo, setUserInfo] = useState(props.user_info);
+
+
+    //Guest User
+    const [isGuestUser, setIsGuestUser] =useState(false);
+    const [isInUserTable, setIsInUserTable] =useState(false);
 
     //Modal show hooks
     const [showCreateRoomModal, setShowCreateRoomModal] = useState(false);
@@ -17,7 +22,11 @@ const Homepage = (props) => {
 
     //Modal field value hooks
     const [loginModalFields, setLoginModalFields] = useState({
-        name: ""
+        name: "",
+        password: "",
+    });
+    const [guestNameField, setGuestNameFields] = useState({
+        name: "",
     });
     const [createRoomFields, setCreateRoomFields] = useState({
         name: "",
@@ -38,7 +47,7 @@ const Homepage = (props) => {
         username: "",
         password: "",
         confirm_password: "",
-        type_of_user: "",
+        type_of_user: "regular",
     });
     const [userRooms, setUserRooms] = useState([])
     const [showPrevRooms, setShowPrevRooms] = useState(false)
@@ -48,6 +57,7 @@ const Homepage = (props) => {
     const handleCreateRoomClose = () => setShowCreateRoomModal(false);
     const handleCreateRoomShow = () => setShowCreateRoomModal(true);
     const handleJoinRoomClose = () => setShowJoinRoomModal(false);
+
     
     const handleJoinRoomShow = () => {
         setShowJoinRoomModal(true);
@@ -81,6 +91,7 @@ const Homepage = (props) => {
         });
     }
 
+
     const handleAddRestaurantClose = () => setShowAddRestaurantModal(false);
     const handleAddRestaurantShow = () => setShowAddRestaurantModal(true);
     const handleSignUpClose = () => setshowSignUpModal(false);
@@ -90,6 +101,19 @@ const Homepage = (props) => {
     let optionItems = locations.map((location) =>
             <option  value={location.id} key={location.name}>{location.name}</option>
         );
+
+    //continue as guest button click
+    const continueAsGuest = () => {
+        console.log(isGuestUser);
+        console.log(isGuestUser);
+        setIsGuestUser(true);
+        //isGuestUser = true;
+        setIsLoggedIn(true);
+        
+        console.log("in continue as guest");
+        console.log(isGuestUser);
+        console.log(isGuestUser);
+    }
 
     //Sign in as guest
     const signInAsGuest = () => {
@@ -101,16 +125,22 @@ const Homepage = (props) => {
                 'Content-Type': 'application/json'
             }, 
             body: JSON.stringify({
-                name: loginModalFields["name"]
+                name: guestNameField["name"]
             })
         })
         .then(response => response.json())
         .then(data => {
             console.log(data);
             if (data['status'] == 200) {
+                console.log("Status: " + data['status']);
                 let user_data = data['user_data'];
-                setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
-                setIsLoggedIn(true);
+
+                //setUserInfo({...userInfo, name: user_data['name']});
+               // setIsLoggedIn(true);
+               setIsInUserTable(true);
+
+               // setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+               // setIsLoggedIn(true);
             } else {
                 console.log("Status: " + data['status']);
             }
@@ -129,20 +159,24 @@ const Homepage = (props) => {
                 'Content-Type': 'application/json'
             }, 
             body: JSON.stringify({
-                name: signUpFields['name'],
-                password: signUpFields['password']
+                username: loginModalFields['name'],
+                password: loginModalFields['password']
             })
         })
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            if (response.status === 400) {
+            if (data['status'] == 469) {
                 alert("Incorrect username or password")
             }
             else if (data['status'] == 200) {
                 let user_data = data['user_data'];
                 setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+                setGuestNameFields({...guestNameField, name: user_data['username']});
                 setIsLoggedIn(true);
+                setIsInUserTable(true);
+                setLoginModalFields({...loginModalFields, name: "", password:""})
+
             } else {
                 console.log("Status: " + data['status']);
             }
@@ -152,6 +186,21 @@ const Homepage = (props) => {
         });
     }
 
+    const logIn = () => {
+        console.log("Log in button");
+        if(loginModalFields['name']==""||loginModalFields['password']=="")
+            alert("Please enter your name and password")
+        else
+        {
+            //setIsInUserTable(true);
+            console.log(loginModalFields['name']);
+            //setUserInfo({...userInfo, name: user_data['name']});
+            signInAsAccountUser();
+            
+        }
+        
+       
+    }
     //Update Location fields 
     function updateRoomLocation(e){
         setCreateRoomFields({...createRoomFields, location: parseInt(e.target.value)})
@@ -160,6 +209,8 @@ const Homepage = (props) => {
     //update user type field
     function updateUserTypeField(e){
         setSignUpFields({...signUpFields, type_of_user: e.target.value})
+        //console.log(e.target.value);
+        //console.log(signUpFields["type_of_user"])
     }
 
     function updateRestaurantLocation(e){
@@ -174,8 +225,21 @@ const Homepage = (props) => {
 
     //for logging out
     function handleLogOut(){
-        fetch('/log_out')
+       /* if(isInUserTable)
+            {
+                console.log("is in session")
+                fetch('/log_out')
+            }
+        else
+        {
+            console.log ("a guest");
+            fetch('/log_out')
+        }*/
+        fetch('/log_out');
         setIsLoggedIn(false);
+        setIsGuestUser(false);
+        setUserInfo({...userInfo, name: "", id: ""});
+        setGuestNameFields({...guestNameField, name: ""});
         if (!isLoggedIn){
             console.log("logged out");
         }
@@ -183,7 +247,15 @@ const Homepage = (props) => {
 
     //Join room request
     const joinRoomRequest=() => {
+
+       
+        if(isGuestUser&&!isInUserTable)
+        {
+            console.log("guest user: join room");
+            signInAsGuest();
+        }
         console.log ("you have joined with token " + joinRoomFields["token"])
+
         fetch('/room/join', {
             method: 'POST', 
             redirect: 'follow',
@@ -207,6 +279,11 @@ const Homepage = (props) => {
 
     //Create Room Request
     const createRoomRequest=() => {
+        if(isGuestUser&&!isInUserTable)
+        {
+            console.log("guest user: create room")
+            signInAsGuest();
+        }
         fetch('/room', {
             method: 'POST', 
             headers: {
@@ -234,6 +311,11 @@ const Homepage = (props) => {
 
     //Add Restaurant Request
     const AddRestaurantRequest=() => {
+        if(isGuestUser&&!isInUserTable)
+        {
+            console.log("guest user: add restaurant")
+            signInAsGuest();
+        }
         fetch('/restaurant', {
             method: 'POST', 
             headers: {
@@ -264,6 +346,10 @@ const Homepage = (props) => {
     }
     const createAccount=(e) => {
         console.log("createAccount ");
+
+        console.log(signUpFields['name'], " + ", signUpFields['type_of_user'], "+ ",signUpFields['password']);
+        if(signUpFields['password']==""||signUpFields['confirm_password']==""||signUpFields['name']=="")
+
         console.log(signUpFields['name']);
         if(signUpFields['password']==""||signUpFields['confirm_password']==""||signUpFields['name']==""||signUpFields['username']=="")
             alert ("Please fill up all the fields");
@@ -307,28 +393,51 @@ const Homepage = (props) => {
         
     }
     return (
+       
         <div className="container">
             <div>Welcome to our app {userInfo["name"]}</div>
-            <button type="button" className="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button>
-            <button type="button" className="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button>
-            <button type="button" className="btn btn-primary" onClick={handleAddRestaurantShow}>Add Restaurant</button>
+            {isGuestUser&&
+            <div className="input-group input-group-sm mb-3" >
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">User Name</span>
+                    </div>
+                    <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setGuestNameFields({...guestNameField, name: e.target.value})} value={guestNameField['name']}/>
+                </div>
+}
+            
+            <button type="button" className="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button><br/><br/>
+            <button type="button" className="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button><br/><br/>
+            <button type="button" className="btn btn-primary" onClick={handleAddRestaurantShow}>Add Restaurant</button><br/><br/>
             <button type="button" className="btn btn-primary" onClick={handleLogOut}>Log Out</button>
 
             <Modal show={!isLoggedIn}>
-                <Modal.Header closeButton>
+                <Modal.Header >
                     <Modal.Title>Sign-in to Proceed</Modal.Title>
                 </Modal.Header>
-
+                
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                        <span className="input-group-text" id="inputGroup-sizing-sm">User Name</span>
                     </div>
                     <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setLoginModalFields({...loginModalFields, name: e.target.value})} value={loginModalFields['name']}/>
                 </div>
-            
+                <div className="input-group input-group-sm mb-3">
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Password</span>
+                    </div>
+                    <input type="password" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setLoginModalFields({...loginModalFields, password: e.target.value})} value={loginModalFields['password']}/>
+                </div>
+                <div>
+                <Button variant="primary" onClick={logIn}>
+                    Log in
+                    </Button>
+                </div>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={signInAsGuest}>
-                    Sign In as a Guest
+                    <div>
+                        Don't have an account?
+                    </div>
+                    <Button variant="primary" onClick={continueAsGuest}>
+                    Continue as a Guest
                     </Button>
                     <Button variant="primary" onClick={signUp}>
                     Sign Up
@@ -379,7 +488,7 @@ const Homepage = (props) => {
 
                 <div className="input-group input-group-sm mb-3">
                     <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm">Name</span>
+                        <span className="input-group-text" id="inputGroup-sizing-sm">Room Name</span>
                     </div>
                     <input type="text" className="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm" onChange={e => setCreateRoomFields({...createRoomFields, name: e.target.value})} value={createRoomFields['name']}/>
                 </div>
@@ -486,8 +595,9 @@ const Homepage = (props) => {
                     </div>
                     <div>
                             <select value={signUpFields["type_of_user"]} onChange={updateUserTypeField} >
-                                <option  value="owner" >Restaurant Owner</option>
                                 <option  value="regular" >Regular User</option>
+                                <option  value="owner" >Restaurant Owner</option>
+                                
                             </select>
                     </div>
                 </div>
