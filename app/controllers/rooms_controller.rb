@@ -17,7 +17,7 @@ class RoomsController < ApplicationController
             if !member
                 member = Member.new(user_id: user_id, room_id: room.id, is_host: false)
                 if !member.save
-                    render json: {status: 460}
+                    render json: {}, status: 422
                 end
             end
             @voted = member.votes != nil
@@ -30,28 +30,23 @@ class RoomsController < ApplicationController
             for restaurant in restaurant_list do
                 @restaurants[restaurant.id] = restaurant
             end
-
         else
             redirect_to "/"
         end
     end
 
     def join_room
-        if Room.exists?(token: params[:token])== false
-            #render json: {status: 469, token: params[:token]}
-            return
+        if Room.exists?(token: params[:token])
+            redirect_to :action => "roompage", :token => params[:token]
         else
-        redirect_to :action => "roompage", :token => params[:token]
+            render json: {token: params[:token]}, status: 404
         end
     end
 
     def room_votes
-
         room_token = params[:room_token]
         room_votes = get_votes_in_room(room_token)
-
-
-        render json: {status: 200, room_votes: room_votes}
+        render json: {room_votes: room_votes}, status: 200
     end
 
     def get_participants(room_id)
@@ -93,20 +88,22 @@ class RoomsController < ApplicationController
     end
 
     def show 
+        status = 404
         if params.has_key?(:id)
             @room = Room.find params[:id]
+            status = 200
         elsif params.has_key?(:token)
             @room = Room.find_by! token: params[:token]
+            status = 200
         end
-        render json: @room	
+        render json: @room, status: status
     end
 
     def create
         @location_id = params[:location_id]
         @room_name = params[:room_name]
 
-
-       # @location_id = Location.where(name: @location_name).pluck(:id)[0]
+        # @location_id = Location.where(name: @location_name).pluck(:id)[0]
         @room = Room.new(name:@room_name, location_id:@location_id)
 
         # generate token
@@ -117,12 +114,10 @@ class RoomsController < ApplicationController
     
         if @room.save
             # TODO: Send them success
-            render json: {status: 200, room_token: @room.token, id: @room.id}
+            render json: {room_token: @room.token, id: @room.id}, status: 200
             # TODO: Send user to their room page
         else
-            render json: {}, status: 500
+            render json: {}, status: 422
         end
-        #render json: {status: 400}
     end
-
 end
