@@ -33,6 +33,20 @@ class HomepagesController < ApplicationController
     end
   end
 
+
+  def add_guest_name
+    @guest_name = params[:name]
+    @id = session[:user_id]
+    @user = User.find_by(id: @id)
+    if @user
+      @user.update_attribute(:name, @guest_name)
+      render json: {status: 200, user_id: @id}
+    else
+      render json: {status: 469}
+    end
+  end
+
+
   def signin
   	@name = params[:username]
     @password = params[:password]

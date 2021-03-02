@@ -151,6 +151,33 @@ const Homepage = (props) => {
         });
     }
 
+    //Add guest name in user table
+    const addGuestName = () => {
+        fetch('/addGuestName', {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json'
+            }, 
+            body: JSON.stringify({
+                name: guestNameField["name"]
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data['status'] == 200) {
+                console.log("Status: " + data['status']);
+                console.log("id: " + data['user_id']);
+            } else {
+                alert("error in saving name in table");
+                console.log("Status: " + data['status']);
+            }
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
+    }
+
     const signInAsAccountUser = () => {
         console.log(props.session);
 
@@ -255,6 +282,7 @@ const Homepage = (props) => {
             console.log("guest user: join room");
             signInAsGuest();
         }*/
+        addGuestName();
         console.log ("you have joined with token " + joinRoomFields["token"]);
         console.log(props.session);
         fetch('/room/join', {
