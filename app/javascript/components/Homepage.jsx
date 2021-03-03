@@ -282,7 +282,8 @@ const Homepage = (props) => {
             console.log("guest user: join room");
             signInAsGuest();
         }*/
-        addGuestName();
+        if(isGuestUser)
+            addGuestName();
         console.log ("you have joined with token " + joinRoomFields["token"]);
         console.log(props.session);
         fetch('/room/join', {
