@@ -77,10 +77,10 @@ const Roompage = (props) => {
             for (let member in roomParticipants) {
                 // If member voted alread
                 if (roomParticipants[member]) {
-                    memberIcons.push(<li style={{listStyleType: "none"}} ><i class='fas fa-user-check' style={{color: "green"}}></i>{member}</li>)
+                    memberIcons.push(<li style={{listStyleType: "none"}} >{member} voted</li>)
                 }
                 else {
-                    memberIcons.push(<li style={{listStyleType: "none"}}><i class='fas fa-user-times' style={{color: "red"}}></i>{member}</li>)
+                    memberIcons.push(<li style={{listStyleType: "none"}}>{member} has not voted</li>)
                 }
             }
 
