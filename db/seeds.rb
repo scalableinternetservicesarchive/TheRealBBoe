@@ -18,11 +18,15 @@ Location.find_or_create_by(name: "Santa Barbara")
 Location.find_or_create_by(name: "Solvang")
 
 Room.find_or_create_by(token: "ABCDE", name: "Manzanita Floor 1 Decision", location_id: 1)
+Room.find_or_create_by(token: "EFGHI", name: "Take decision", location_id: 1)
+Room.find_or_create_by(token: "IJKLM", name: "Food hangout", location_id: 1)
 
 Member.find_or_create_by(room_id: 1, user_id: 1, is_host: false)
 Member.find_or_create_by(room_id: 1, user_id: 2, is_host: false)
 Member.find_or_create_by(room_id: 1, user_id: 3, is_host: true)
 Member.find_or_create_by(room_id: 2, user_id: 1, is_host: true)
+Member.find_or_create_by(room_id: 3, user_id: 3, is_host: false)
+Member.find_or_create_by(room_id: 2, user_id: 3, is_host: false)
 
 
 Restaurant.find_or_create_by(name: "Deja Vu", location_id: 1, description: "Indian food")
