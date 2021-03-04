@@ -69,22 +69,25 @@ const Homepage = (props) => {
                     'Content-Type': 'application/json'
                 },
             })
-            .then(response => response.json())
+            .then(response => {
+                if (response.ok) {
+                    return response.json()
+                } else {
+                    console.log("status: " + response.status);
+                    return Promise.reject(response);
+                }
+            })
             .then(data => {
                 console.log(data);
-                if (data['status'] == 200) {
-                    let rooms = data['rooms']
-                    let prevRoomOptions = rooms.map((room) =>
-                        <option value={room.room_token} key={room.room_id}>{room.room_name}</option>
-                    );
+                let rooms = data['rooms']
+                let prevRoomOptions = rooms.map((room) =>
+                    <option value={room.room_token} key={room.room_id}>{room.room_name}</option>
+                );
 
-                    if (prevRoomOptions.length !== 0) {
-                        prevRoomOptions = [<option key='0' value="none" selected disabled hidden> Select a Room </option>].concat(prevRoomOptions)
-                        setUserRooms(prevRoomOptions)
-                        setShowPrevRooms(true)
-                    }
-                } else {
-                    console.log("Status: " + data['status']);
+                if (prevRoomOptions.length !== 0) {
+                    prevRoomOptions = [<option key='0' value="none" selected disabled hidden> Select a Room </option>].concat(prevRoomOptions)
+                    setUserRooms(prevRoomOptions)
+                    setShowPrevRooms(true)
                 }
             })
             .catch((error) => {
