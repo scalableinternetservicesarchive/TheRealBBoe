@@ -46,6 +46,7 @@ class UsersController < ApplicationController
             @user = User.new(user_params)	
             @user.is_auth = user_params.has_key?(:password)	
             @user.save
+            session[:user_id] = @user.id
             render json: {user_data: {id: @user.id, name: @user.name, username: @user.username}}, status: 201
         end
     end	
