@@ -10,15 +10,9 @@ class UsersController < ApplicationController
             members = Member.where(room_id: params[:room_id])	
             user_ids = members.map(&:user_id)	
             @user = @user.find(id=user_ids)	
-
-            body = @user
-            status = 200
-        else # 
-            body = {}
-            status = 404
         end	
 
-        render json: body, status: status
+        render json: @user, status: status
     end	
 
     def show	
