@@ -18,7 +18,7 @@ class HomepagesController < ApplicationController
 
   def log_out
     session.delete(:user_id)
-    render json: {status: 200}
+    render json: {}, status: 200
   end
 
   def signin_as_guest
@@ -27,9 +27,9 @@ class HomepagesController < ApplicationController
 
     if @user.save
     	session[:user_id] = @user.id
-     	render json: {status: 200, user_data: {id: @user.id, name: @user.name, username: @user.username}}
-    else
-     	render json: {status: 469, params: params}
+     	render json: {user_data: {id: @user.id, name: @user.name, username: @user.username}}, status: 200
+    else # could not process, return 422
+     	render json: {params: params}, status: 422
     end
   end
 
@@ -40,9 +40,9 @@ class HomepagesController < ApplicationController
     @user = User.find_by(id: @id)
     if @user
       @user.update_attribute(:name, @guest_name)
-      render json: {status: 200, user_id: @id}
+      render json: {user_id: @id}, status: 200
     else
-      render json: {status: 469}
+      render json: {params: params}, status: 404
     end
   end
 
@@ -53,12 +53,21 @@ class HomepagesController < ApplicationController
   	@user = User.find_by(username: @name, password: @password)
     if @user
     	session[:user_id] = @user.id
-      #render json: @user.id
-     #	render json: {user_data: {id: @user.id, name: @user.name, username: @user.username}}, status: 200
-       render json: {status: 200, user_data: {id: @user.id, name: @user.name, username: @user.username}}
+        render json: {user_data: {id: @user.id, name: @user.name, username: @user.username}}, status: 200
     else
-     	#render json: {params: params}, status: 469
-       render json: {status: 469, params: params}
+       render json: {params: params}, status: 404
     end
+  end
+
+  def reset_db
+    Member.delete_all
+    Room.delete_all
+    User.delete_all
+    Restaurant.delete_all
+    Location.delete_all
+
+    Rails.application.load_seed
+
+    render json: {}, status: 200
   end
 end

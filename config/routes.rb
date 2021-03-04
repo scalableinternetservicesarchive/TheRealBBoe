@@ -37,6 +37,7 @@ Rails.application.routes.draw do
     get 'log_out', to: 'homepages#log_out'
     post 'signin', to: 'homepages#signin'
     post 'addGuestName', to: 'homepages#add_guest_name'
+    get 'reset_database', to: 'homepages#reset_db'
 
 
 end

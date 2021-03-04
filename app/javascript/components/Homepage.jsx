@@ -128,23 +128,26 @@ const Homepage = (props) => {
                 name: guestNameField["name"]
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.ok) {
+                return response.json()
+            } else {
+                alert(`error in signin: ${response.status}`);
+                console.log("status: " + response.status);
+                return Promise.reject(response);
+            }
+        })
         .then(data => {
             console.log(data);
-            if (data['status'] == 200) {
-                console.log("Status: " + data['status']);
-                let user_data = data['user_data'];
 
-                //setUserInfo({...userInfo, name: user_data['name']});
-               //setIsLoggedIn(true);
-              // setIsInUserTable(true);
+            let user_data = data['user_data'];
 
-               setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
-               setIsLoggedIn(true);
-            } else {
-                alert("error in signin");
-                console.log("Status: " + data['status']);
-            }
+            //setUserInfo({...userInfo, name: user_data['name']});
+            //setIsLoggedIn(true);
+            // setIsInUserTable(true);
+
+            setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+            setIsLoggedIn(true);
         })
         .catch((error) => {
             console.error("Error: ", error);
@@ -162,16 +165,17 @@ const Homepage = (props) => {
                 name: guestNameField["name"]
             })
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            if (data['status'] == 200) {
-                console.log("Status: " + data['status']);
-                console.log("id: " + data['user_id']);
+        .then(response => {
+            if (response.ok) {
+                return response.json()
             } else {
                 alert("error in saving name in table");
-                console.log("Status: " + data['status']);
+                console.log("status: " + response.status);
+                return Promise.reject(response);
             }
+        })
+        .then(data => {
+            console.log("id: " + data['user_id']);
         })
         .catch((error) => {
             console.error("Error: ", error);
@@ -191,23 +195,22 @@ const Homepage = (props) => {
                 password: loginModalFields['password']
             })
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            if (data['status'] == 469) {
-                alert("Incorrect username or password")
-            }
-            else if (data['status'] == 200) {
-                let user_data = data['user_data'];
-                setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
-                setGuestNameFields({...guestNameField, name: user_data['username']});
-                setIsLoggedIn(true);
-                setIsInUserTable(true);
-                setLoginModalFields({...loginModalFields, name: "", password:""})
-
+        .then(response => {
+            if (response.ok) {
+                return response.json()
             } else {
-                console.log("Status: " + data['status']);
+                alert("Incorrect username or password")
+                console.log("status: " + response.status);
+                return Promise.reject(response);
             }
+        })
+        .then(data => {   
+            let user_data = data['user_data'];
+            setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+            setGuestNameFields({...guestNameField, name: user_data['username']});
+            setIsLoggedIn(true);
+            setIsInUserTable(true);
+            setLoginModalFields({...loginModalFields, name: "", password:""})
         })
         .catch((error) => {
             console.error("Error: ", error);
@@ -282,7 +285,8 @@ const Homepage = (props) => {
             console.log("guest user: join room");
             signInAsGuest();
         }*/
-        addGuestName();
+        if(isGuestUser)
+            addGuestName();
         console.log ("you have joined with token " + joinRoomFields["token"]);
         console.log(props.session);
         fetch('/room/join', {
@@ -323,15 +327,17 @@ const Homepage = (props) => {
                 location_id: createRoomFields["location"]
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.ok) {
+                return response.json()
+            } else {
+                console.log("status: " + response.status);
+                return Promise.reject(response);
+            }
+        })
         .then(data => {
             console.log(data);
-            if (data['status'] == 200) {
-                console.log("OK")
-                setCreateRoomFields({...createRoomFields, token: data['room_token']})
-            } else {
-                console.log("Status: " + data['status']);
-            }
+            setCreateRoomFields({...createRoomFields, token: data['room_token']})
         })
         .catch((error) => {
             console.error("Error: ", error);
@@ -356,14 +362,17 @@ const Homepage = (props) => {
                 location_id:addRestaurantFields["location"]
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.ok) {
+                return response.json()
+            } else {
+                console.log("status: " + response.status);
+                return Promise.reject(response);
+            }
+        })
         .then(data => {
             console.log(data);
-            if (data['status'] == 200) {
-                console.log("OK created restaurant")
-            } else {
-                console.log("Status: " + data['status']);
-            }
+            console.log("OK created restaurant")
         })
         .catch((error) => {
             console.error("Error: ", error);
@@ -396,30 +405,29 @@ const Homepage = (props) => {
                     password: signUpFields['password']
                 })
             })
-            .then(response =>  response.json().then(data => ({status: response.status, body: data})))
-            .then(result => {
-                console.log(result);
-                if (result.status === 400) {
+            .then(response => {
+                if (response.ok) {
+                    return response.json().then(data => ({status: response.status, body: data}))
+                } else {
+                    console.log("status: " + response.status);
                     alert("Username already exists!")
                 }
-                else if (result.status === 201) {
-                    let user_data = result.body['user_data'];
-                    setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
-                    setIsLoggedIn(true);
-                    setshowSignUpModal(false)
+            })
+            .then(result => {
+                console.log(result);
 
-                    // Clear the given inputs
-                    setSignUpFields({...signUpFields, name: "", username: "", password:"", confirm_password:"", type_of_user:""})
-                }
-                else {
-                    console.error("Error: ", error);
-                }
+                let user_data = result.body['user_data'];
+                setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+                setIsLoggedIn(true);
+                setshowSignUpModal(false)
+
+                // Clear the given inputs
+                setSignUpFields({...signUpFields, name: "", username: "", password:"", confirm_password:"", type_of_user:""})
             })
             .catch((error) => {
                 console.error("Error: ", error);
             });
         } 
-        
     }
     return (
        
