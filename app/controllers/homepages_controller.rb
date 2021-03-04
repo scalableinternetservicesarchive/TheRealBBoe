@@ -61,4 +61,16 @@ class HomepagesController < ApplicationController
        render json: {status: 469, params: params}
     end
   end
+
+  def reset_db
+    Member.delete_all
+    Room.delete_all
+    User.delete_all
+    Restaurant.delete_all
+    Location.delete_all
+
+    Rails.application.load_seed
+
+    render json: {}, status: 200
+  end
 end
