@@ -13,7 +13,7 @@ class MembersController < ApplicationController
         @room_ids = Member.where(user_id: @user_id).pluck(:room_id)
 
         @roomList = []
-        room_ids.each { |room_id|
+        @room_ids.each { |room_id|
             @room = Room.find_by(id: room_id)
             temp = {}
             temp.store("room_id",@room.id)
