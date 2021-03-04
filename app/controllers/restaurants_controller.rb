@@ -2,12 +2,7 @@ class RestaurantsController < ApplicationController
     protect_from_forgery :except => :create 
 
     def index
-        @restaurant = Restaurant.all
-        if params.has_key?(:location_id)
-            # get all restaurants in certain location
-            @restaurant = @restaurant.where(location_id: params[:location_id])
-        end
-        render json: {data: @restaurant}, status: 200
+        #render json: {}, status: 200
     end
 
     def show	
