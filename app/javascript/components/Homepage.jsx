@@ -62,33 +62,35 @@ const Homepage = (props) => {
     const handleJoinRoomShow = () => {
         setShowJoinRoomModal(true);
 
-        fetch('/get_rooms/', {
-            method: 'GET', 
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            if (data['status'] == 200) {
-                let rooms = data['rooms']
-                let prevRoomOptions = rooms.map((room) =>
-                    <option value={room.room_token} key={room.room_id}>{room.room_name}</option>
-                );
+        if (userInfo["is_auth"]) {
+            fetch('/get_rooms/', {
+                method: 'GET', 
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data['status'] == 200) {
+                    let rooms = data['rooms']
+                    let prevRoomOptions = rooms.map((room) =>
+                        <option value={room.room_token} key={room.room_id}>{room.room_name}</option>
+                    );
 
-                if (prevRoomOptions.length !== 0) {
-                    prevRoomOptions = [<option key='0' value="none" selected disabled hidden> Select a Room </option>].concat(prevRoomOptions)
-                    setUserRooms(prevRoomOptions)
-                    setShowPrevRooms(true)
+                    if (prevRoomOptions.length !== 0) {
+                        prevRoomOptions = [<option key='0' value="none" selected disabled hidden> Select a Room </option>].concat(prevRoomOptions)
+                        setUserRooms(prevRoomOptions)
+                        setShowPrevRooms(true)
+                    }
+                } else {
+                    console.log("Status: " + data['status']);
                 }
-            } else {
-                console.log("Status: " + data['status']);
-            }
-        })
-        .catch((error) => {
-            console.error("Error: ", error);
-        });
+            })
+            .catch((error) => {
+                console.error("Error: ", error);
+            });
+        }
     }
 
 
@@ -107,8 +109,6 @@ const Homepage = (props) => {
         console.log(isGuestUser);
         console.log(isLoggedIn);
         setIsGuestUser(true);
-        //isGuestUser = true;
-        //setIsLoggedIn(true);
         signInAsGuest();
         console.log("in continue as guest");
         console.log(isGuestUser);
@@ -142,11 +142,7 @@ const Homepage = (props) => {
 
             let user_data = data['user_data'];
 
-            //setUserInfo({...userInfo, name: user_data['name']});
-            //setIsLoggedIn(true);
-            // setIsInUserTable(true);
-
-            setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+            setUserInfo({...userInfo, name: user_data['name'], id: user_data['id'], is_auth: user_data["is_auth"]});
             setIsLoggedIn(true);
         })
         .catch((error) => {
@@ -175,6 +171,7 @@ const Homepage = (props) => {
             }
         })
         .then(data => {
+            setUserInfo({...userInfo, name: guestNameField["name"], id: user_data['id'], is_auth: user_data["is_auth"]});
             console.log("id: " + data['user_id']);
         })
         .catch((error) => {
@@ -206,7 +203,7 @@ const Homepage = (props) => {
         })
         .then(data => {   
             let user_data = data['user_data'];
-            setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+            setUserInfo({...userInfo, name: user_data['name'], id: user_data['id'], is_auth: user_data["is_auth"]});
             setGuestNameFields({...guestNameField, name: user_data['username']});
             setIsLoggedIn(true);
             setIsInUserTable(true);
@@ -223,15 +220,12 @@ const Homepage = (props) => {
             alert("Please enter your name and password")
         else
         {
-            //setIsInUserTable(true);
             console.log(loginModalFields['name']);
-            //setUserInfo({...userInfo, name: user_data['name']});
             signInAsAccountUser();
             
-        }
-        
-       
+        }  
     }
+
     //Update Location fields 
     function updateRoomLocation(e){
         setCreateRoomFields({...createRoomFields, location: parseInt(e.target.value)})
@@ -240,8 +234,6 @@ const Homepage = (props) => {
     //update user type field
     function updateUserTypeField(e){
         setSignUpFields({...signUpFields, type_of_user: e.target.value})
-        //console.log(e.target.value);
-        //console.log(signUpFields["type_of_user"])
     }
 
     function updateRestaurantLocation(e){
@@ -256,20 +248,10 @@ const Homepage = (props) => {
 
     //for logging out
     function handleLogOut(){
-       /* if(isInUserTable)
-            {
-                console.log("is in session")
-                fetch('/log_out')
-            }
-        else
-        {
-            console.log ("a guest");
-            fetch('/log_out')
-        }*/
         fetch('/log_out');
         setIsLoggedIn(false);
         setIsGuestUser(false);
-        setUserInfo({...userInfo, name: "", id: ""});
+        setUserInfo({...userInfo, name: "", id: "", is_auth: false});
         setGuestNameFields({...guestNameField, name: ""});
         if (!isLoggedIn){
             console.log("logged out");
@@ -279,14 +261,9 @@ const Homepage = (props) => {
     //Join room request
     const joinRoomRequest=() => {
 
-       
-       /* if(isGuestUser&&!isInUserTable)
-        {
-            console.log("guest user: join room");
-            signInAsGuest();
-        }*/
         if(isGuestUser)
             addGuestName();
+
         console.log ("you have joined with token " + joinRoomFields["token"]);
         console.log(props.session);
         fetch('/room/join', {
@@ -312,11 +289,6 @@ const Homepage = (props) => {
 
     //Create Room Request
     const createRoomRequest=() => {
-       /* if(isGuestUser&&!isInUserTable)
-        {
-            console.log("guest user: create room")
-            signInAsGuest();
-        }*/
         fetch('/room', {
             method: 'POST', 
             headers: {
@@ -346,11 +318,6 @@ const Homepage = (props) => {
 
     //Add Restaurant Request
     const AddRestaurantRequest=() => {
-       /* if(isGuestUser&&!isInUserTable)
-        {
-            console.log("guest user: add restaurant")
-            signInAsGuest();
-        }*/
         fetch('/restaurant', {
             method: 'POST', 
             headers: {
@@ -378,10 +345,12 @@ const Homepage = (props) => {
             console.error("Error: ", error);
         });
     }
+    
     const signUp=() => {
         console.log("in sign up");
         setshowSignUpModal(true);
     }
+
     const createAccount=(e) => {
         console.log("createAccount ");
 
@@ -417,7 +386,7 @@ const Homepage = (props) => {
                 console.log(result);
 
                 let user_data = result.body['user_data'];
-                setUserInfo({...userInfo, name: user_data['name'], id: user_data['id']});
+                setUserInfo({...userInfo, name: user_data['name'], id: user_data['id'], is_auth: user_data["is_auth"]});
                 setIsLoggedIn(true);
                 setshowSignUpModal(false)
 
