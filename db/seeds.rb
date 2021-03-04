@@ -20,13 +20,20 @@ Location.find_or_create_by(id: 3, name: "Solvang")
 Room.find_or_create_by(token: "ABCDE", name: "Manzanita Floor 1 Decision", location_id: 1)
 Room.find_or_create_by(token: "EFGHI", name: "Take decision", location_id: 1)
 Room.find_or_create_by(token: "IJKLM", name: "Food hangout", location_id: 1)
+Room.find_or_create_by(token: "MNOPQ", name: "Let's party", location_id: 1)
+Room.find_or_create_by(token: "QRSTU", name: "Where to go?", location_id: 1)
+Room.find_or_create_by(token: "UVWXY", name: "Quick decision", location_id: 1)
 
 Member.find_or_create_by(room_id: 1, user_id: 1, is_host: false)
 Member.find_or_create_by(room_id: 1, user_id: 2, is_host: false)
-Member.find_or_create_by(room_id: 1, user_id: 3, is_host: true)
+Member.find_or_create_by(room_id: 1, user_id: 3, votes:"7;8;9;10;11", is_host: true)
 Member.find_or_create_by(room_id: 2, user_id: 1, is_host: true)
-Member.find_or_create_by(room_id: 3, user_id: 3, is_host: false)
-Member.find_or_create_by(room_id: 2, user_id: 3, is_host: false)
+Member.find_or_create_by(room_id: 3, user_id: 3, votes:"11;12;13", is_host: false)
+Member.find_or_create_by(room_id: 2, user_id: 3, votes:"1;2;3", is_host: false)
+Member.find_or_create_by(room_id: 4, user_id: 3, votes:"4;5;8;2", is_host: false)
+Member.find_or_create_by(room_id: 5, user_id: 3, votes:"1;2;3", is_host: false)
+Member.find_or_create_by(room_id: 5, user_id: 4, is_host: false)
+Member.find_or_create_by(room_id: 6, user_id: 3, votes:"1;2;3", is_host: false)
 
 
 
