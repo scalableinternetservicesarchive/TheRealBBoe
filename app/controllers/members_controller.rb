@@ -2,31 +2,26 @@ class MembersController < ApplicationController
 
     def index
         @member = Member.all
-        render json: @member 
+        render json: @member, status: 200
     end
 
 
-    #if a regular user joins, he can get the list of all rooms he ever had
-    def get_rooms 
-        #the user id will be taken from the session
-        @user_id = session[:user_id]
-        #@user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
+    #if a regular user joins, the user can get the list of all rooms it joined
+    def get_rooms
+        # DO NOT DELETE. Condition used for load testing
+        @user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
         @room_ids = Member.where(user_id: @user_id).pluck(:room_id)
-        if @room_ids !=[]
-            @roomList = []
-            for i in 0..@room_ids.size-1
-                    @room_id= @room_ids[i]
-                    @room = Room.find_by(id: @room_id)
-                    temp = {}
-                    temp.store("room_id",@room.id)
-                    temp.store("room_name", @room.name) 
-                    temp.store("room_token", @room.token)
-                    @roomList.push(temp)
-            end
-            render json: {status: 200, rooms: @roomList}
-        else
-            render json: {status: 460}
-        end
+
+        @roomList = []
+        room_ids.each { |room_id|
+            @room = Room.find_by(id: room_id)
+            temp = {}
+            temp.store("room_id",@room.id)
+            temp.store("room_name", @room.name) 
+            temp.store("room_token", @room.token)
+            @roomList.push(temp)
+        }
+        render json: {rooms: @roomList}, status: 200
     end
 
     def update_member_votes
@@ -43,12 +38,10 @@ class MembersController < ApplicationController
 
         @member.votes = @user_votes
         if @member.save
-            render json: {status: 200}
+            render json: {}, status: 200
         else
-            render json: {status: 550}
-        end
-
-        
+            render json: {}, status: 422
+        end 
     end
 
     def show
@@ -62,16 +55,15 @@ class MembersController < ApplicationController
             #temp.store ("votes",m[:votes])
             returnList.push(temp)
         end
-        render json: JSON[returnList]
+        render json: JSON[returnList], status: 200
     end
 
     def create
         @member = Member.new(member_params)
         if @member.save
-            #TODO: take to the room page
             render json: @member
         else
-            render json: {}, status: 500
+            render json: {}, status: 422
         end
     end
 

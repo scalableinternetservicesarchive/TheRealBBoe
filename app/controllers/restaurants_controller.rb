@@ -7,20 +7,20 @@ class RestaurantsController < ApplicationController
             # get all restaurants in certain location
             @restaurant = @restaurant.where(location_id: params[:location_id])
         end
-        render json: {data: @restaurant} 
+        render json: {data: @restaurant}, status: 200
     end
 
     def show	
         @restaurant = Restaurant.find(params[:id])	
-        render json: @restaurant	
+        render json: @restaurant
     end	
 
     def create
       @restaurant = Restaurant.new(restaurant_params)
       if @restaurant.save
-        render json: {status:200, restaurant:@restaurant} 
+        render json: {restaurant:@restaurant}, status: 200
       else
-        render json: {status: 500}
+        render json: {}, status: 422
       end 
     end
 
