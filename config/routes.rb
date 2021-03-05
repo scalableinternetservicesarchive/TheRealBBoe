@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     get 'restaurant', to: 'restaurants#show'
     get 'restaurants', to: 'restaurants#index'
     post 'restaurant', to: 'restaurants#create'
-    get 'restaurant/seed', to: 'restaurant#seed' 
+    get 'restaurant/seed', to: 'restaurants#seed' 
 
 
     # room

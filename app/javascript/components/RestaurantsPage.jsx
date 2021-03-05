@@ -8,7 +8,6 @@ const Restaurants = (props) => {
 
     function getLocationName(id){
         let res = props.locations.filter(l => l.id == id)
-        console.log(res)
         return res[0].name
     }
 
