@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     post 'restaurant', to: 'restaurants#create'
     get 'restaurant/seed', to: 'restaurant#seed' 
 
+
     # room
     post 'room/join', to: 'rooms#join_room'
     get 'room/votes/:room_token', to: 'rooms#room_votes'
