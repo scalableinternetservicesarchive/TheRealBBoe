@@ -119,14 +119,15 @@ const Roompage = (props) => {
         var optionlist = [];
         for (let rid in restaurants) {
             let restaurant_name = restaurants[rid]["name"]
-            optionlist.push( <Button 
+            let restaurant_description =restaurants[rid]["description"]
+            optionlist.push( <div><Button 
                             id={"restaurant-"+rid} 
                             variant= {buttonColor(rid)}
                             value={rid} 
                             key={restaurant_name}
                             onClick={clickRestaurantButton}>
                         {restaurant_name} 
-                        </Button>);
+                        </Button>  {restaurant_description}  </div>);
         }
 
         return (<div>{optionlist}</div>)
@@ -153,7 +154,7 @@ const Roompage = (props) => {
                         {listParticipants()}
                     </div>
                     {optionItems()}
-                    <div>
+                    <div><br/>
                         <Button id="submit-votes" onClick={submitVotes}>Submit</Button>
                     </div>
                 </div>                
