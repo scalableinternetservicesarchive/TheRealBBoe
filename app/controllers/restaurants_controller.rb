@@ -2,12 +2,7 @@ class RestaurantsController < ApplicationController
     protect_from_forgery :except => :create 
 
     def index
-        @restaurant = Restaurant.all
-        if params.has_key?(:location_id)
-            # get all restaurants in certain location
-            @restaurant = @restaurant.where(location_id: params[:location_id])
-        end
-        render json: {data: @restaurant}, status: 200
+        #render json: {}, status: 200
     end
 
     def show	
@@ -15,6 +10,25 @@ class RestaurantsController < ApplicationController
         render json: @restaurant
     end	
 
+    def seed
+      #logger = Logger.new File.new('example.log', 'w')
+      @n = params[:count]
+      charset = Array('A'..'Z') + Array('a'..'z')
+      
+      begin
+        for i in 1..@n.to_i do
+          @location = rand(1..3)
+          @name = "RandName"+ Array.new(10) { charset.sample }.join
+          @desc = "RandDesc"+ Array.new(42) { charset.sample }.join
+          @restaurant = Restaurant.new(name: @name, description:@desc, location_id:@location)
+          @restaurant.save
+        end
+        render json: {}, status: 200
+      rescue
+        render json: {}, status: 500
+      end
+    end
+    
     def create
       @restaurant = Restaurant.new(restaurant_params)
       if @restaurant.save
