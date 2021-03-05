@@ -10,6 +10,24 @@ class RestaurantsController < ApplicationController
         render json: @restaurant
     end	
 
+    def seed
+      @n = params[:count]
+      charset = Array('A'..'Z') + Array('a'..'z')
+
+      begin
+        for i in 1..@n do
+          @location = rand(1..3)
+          @name = "RandName"+ Array.new(10) { charset.sample }.join
+          @desc = "RandDesc"+ Array.new(42) { charset.sample }.join
+          @restaurant = Restaurant.new(name: @name, description:@desc, location_id:@location)
+          @restaurant.save
+        end
+        render json: {}, status: 200
+      rescue =>
+        render json: {}, status: 500
+      end
+    end
+    
     def create
       @restaurant = Restaurant.new(restaurant_params)
       if @restaurant.save
