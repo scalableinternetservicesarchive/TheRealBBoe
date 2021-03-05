@@ -29,7 +29,7 @@ class HomepagesController < ApplicationController
 
     if @user.save
     	session[:user_id] = @user.id
-     	render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth:false}}, status: 200
+     	render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth:false}, session: session}, status: 200
     else # could not process, return 422
      	render json: {params: params}, status: 422
     end

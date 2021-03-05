@@ -38,7 +38,7 @@ class MembersController < ApplicationController
 
         @member.votes = @user_votes
         if @member.save
-            render json: {}, status: 200
+            render json: {session: session}, status: 200
         else
             render json: {}, status: 422
         end 

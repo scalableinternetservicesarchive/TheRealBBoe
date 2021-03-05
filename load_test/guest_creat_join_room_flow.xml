@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tsung SYSTEM "/usr/local/Cellar/tsung/1.7.0/share/tsung/tsung-1.0.dtd">
+<tsung loglevel="warning">
+
+    <clients>
+        <client host="localhost" use_controller_vm="true" maxusers="1000000000000"/>
+    </clients>
+
+    <servers>
+        <server host="demo2.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/>
+        <!-- <server host="localhost" port="3000" type="tcp"/> -->
+    </servers>
+
+    <load>
+        <!-- <arrivalphase phase="1" duration="10" unit="second">
+            <users arrivalrate="1" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="2" duration="10" unit="second">
+            <users arrivalrate="5" unit="second"/>
+        </arrivalphase> -->
+        <arrivalphase phase="1" duration="30" unit="second">
+            <users arrivalrate="100" unit="second"/>
+        </arrivalphase>
+
+        <!-- <arrivalphase phase="1" duration="1" unit="minute">
+            <users arrivalrate="1" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="2" duration="2" unit="minute">
+            <users arrivalrate="10" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="3" duration="3" unit="minute">
+            <users arrivalrate="50" unit="second"/>
+        </arrivalphase> -->
+    </load>
+
+    <sessions>
+        <session name="guest_room_creator" weight="1" type="ts_http">
+            <!-- home page (models queried for display in react) -->
+            <request>
+                <http url='/' method="GET" />
+            </request>
+
+            <!-- create guest user -->
+            <request>
+                <dyn_variable name="csrf_token" jsonpath="$.session._csrf_token"/>
+                <dyn_variable name="session_id" jsonpath="$.session.session_id"/>
+                <dyn_variable name="user_id" jsonpath="$.session.user_id"/>
+                <http url='/guest_signin/' method="POST"
+                    content_type='application/json'
+                    contents_from_file="guest.json" />
+            </request>
+                    
+
+            <!-- guest creates room -->
+            <request>
+                <dyn_variable name="room_token" jsonpath="$.room_token"/>
+                <dyn_variable name="room_id" jsonpath="$.id"/>
+                <http url="/room" method="POST"
+                    content_type='application/json'
+                    contents_from_file="room.json" />
+            </request>
+
+            <request subst="true">
+                <http url="/room/%%_room_token%%">
+                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                    <add_cookie key="session_id" value= "%%_session_id%%" />
+                    <add_cookie key="user_id" value="%%_user_id%%" />
+                </http>
+            </request>
+
+            <!-- user takes time to make decision-->
+            <thinktime min="2" max="5" random="true"></thinktime>
+
+
+            <!-- user votes -->
+            <request subst="true">
+                <http url="/member/update_vote" method="POST"
+                    content_type='application/json'
+                    contents='{
+                        &quot;user_id&quot;: &quot;%%_user_id%%&quot;,
+                        &quot;token&quot;: &quot;%%_room_token%%&quot;,
+                        &quot;votes&quot;: &quot;3;4;5&quot;
+                    }' />
+            </request>
+
+
+            <!-- user views results -->
+            <request subst="true">
+                <http url="/room/votes/%%_room_token%%" method="GET" />
+            </request>
+
+        </session>
+    </sessions>
+</tsung>
