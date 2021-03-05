@@ -23,7 +23,7 @@ class RestaurantsController < ApplicationController
           @restaurant.save
         end
         render json: {}, status: 200
-      rescue =>
+      rescue
         render json: {}, status: 500
       end
     end
