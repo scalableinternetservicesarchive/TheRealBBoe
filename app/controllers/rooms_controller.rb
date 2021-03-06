@@ -50,9 +50,34 @@ class RoomsController < ApplicationController
     end
 
     def get_participants(room_id)
+    #def get_participants
         members = Member.where(:room_id => room_id)
-
+       # members = Member.where(:room_id=> params[:room_id])
+        member_ids_votes = members.pluck(:user_id, :votes)
+        member_ids = members.pluck(:user_id)
+        member_votes = members.pluck(:votes)
+        users = User.find(member_ids)
+        ids_with_votes = []
+        ids_without_votes = []
+        for member in member_ids_votes do
+            if member[1]!= nil
+                ids_with_votes.push(member[0])
+            end
+        end
         participants = {}
+        for user in users do
+            if ids_with_votes.include? user.id
+                participants[user.name] = true
+            else
+                participants[user.name] = false
+            end 
+        end
+
+        
+
+        #render json:participants
+        
+        '''participants = {}
         for member in members do
             if member != nil
                 user  = User.find_by(id: member.user_id)
@@ -62,7 +87,7 @@ class RoomsController < ApplicationController
                     participants[user.name] = false;
                 end
             end
-        end
+        end'''
 
         return participants
     end

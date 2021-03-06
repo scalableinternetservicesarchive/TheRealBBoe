@@ -25,6 +25,8 @@ Rails.application.routes.draw do
     get 'room/:token', to: 'rooms#roompage'
     post 'room', to: 'rooms#create'
     get 'rooms', to: 'rooms#index'
+
+    #get 'check/:room_id', to: 'rooms#get_participants'
     
 
     # location

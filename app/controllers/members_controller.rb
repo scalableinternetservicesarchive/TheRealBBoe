@@ -12,15 +12,19 @@ class MembersController < ApplicationController
         @user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
         @room_ids = Member.where(user_id: @user_id).pluck(:room_id)
 
+        @rooms = Room.find(@room_ids)
+        #render json: @rooms
+        
         @roomList = []
-        @room_ids.each { |room_id|
-            @room = Room.find_by(id: room_id)
+        #@rooms.each { |room|
+        for room in @rooms do
+            #@room = Room.find_by(id: room_id)
             temp = {}
-            temp.store("room_id",@room.id)
-            temp.store("room_name", @room.name) 
-            temp.store("room_token", @room.token)
+            temp.store("room_id",room.id)
+            temp.store("room_name", room.name) 
+            temp.store("room_token", room.token)
             @roomList.push(temp)
-        }
+        end
         render json: {rooms: @roomList}, status: 200
     end
 

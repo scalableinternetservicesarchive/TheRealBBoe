@@ -52,10 +52,16 @@ class HomepagesController < ApplicationController
   def signin
   	@name = params[:username]
     @password = params[:password]
-  	@user = User.find_by(username: @name, password: @password)
+  	#@user = User.find_by(username: @name, password: @password)
+    @user = User.find_by(username: @name)
+    user_pass = @user.password
     if @user
-    	session[:user_id] = @user.id
+      if user_pass!= @password
+        render json: {params: params}, status: 404
+      else
+    	  session[:user_id] = @user.id
         render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth: @user.is_auth}}, status: 200
+      end
     else
        render json: {params: params}, status: 404
     end
