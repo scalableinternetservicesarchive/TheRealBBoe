@@ -6,6 +6,10 @@ class RoomsController < ApplicationController
         render json: @room
     end
 
+    def existing_room_token
+        render json: {"token": Room.last.token}, status: 200
+    end
+
     def roompage
         if session.key?(:user_id) || params.has_key?(:user_id)
             @room_token = params[:token]
