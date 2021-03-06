@@ -7,7 +7,7 @@ class RoomsController < ApplicationController
     end
 
     def existing_room_token
-        render json: {"token": Room.first.token}, status: 200
+        render json: {"token": Room.last.token}, status: 200
     end
 
     def roompage
