@@ -27,6 +27,7 @@ Rails.application.routes.draw do
     get 'room/:token', to: 'rooms#roompage'
     post 'room', to: 'rooms#create'
     get 'rooms', to: 'rooms#index'
+    get 'existing_token', to: 'rooms#existing_room_token'
     
 
     # location
@@ -40,6 +41,4 @@ Rails.application.routes.draw do
     post 'signin', to: 'homepages#signin'
     post 'addGuestName', to: 'homepages#add_guest_name'
     get 'reset_database', to: 'homepages#reset_db'
-
-
 end
