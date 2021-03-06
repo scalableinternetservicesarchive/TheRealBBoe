@@ -67,6 +67,14 @@
                 <http url="/room/votes/%%_room_token%%" method="GET" />
             </request>
 
+            <!-- logout -->
+            <request subst="true">
+                <http url="/log_out" method="GET">
+                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                    <add_cookie key="session_id" value= "%%_session_id%%" />
+                    <add_cookie key="user_id" value="%%_user_id%%" />
+                </http>
+            </request>
         </session>
     </sessions>
 </tsung>
