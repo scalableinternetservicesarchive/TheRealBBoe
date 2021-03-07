@@ -7,30 +7,77 @@
     </clients>
 
     <servers>
-        <server host="demo2.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/>
+        <server host="aprilsanchez.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/>
         <!-- <server host="localhost" port="3000" type="tcp"/> -->
     </servers>
 
     <load>
+        <!-- Test 1 -->
         <arrivalphase phase="1" duration="10" unit="second">
-            <users arrivalrate="1" unit="second"/>
+            <users arrivalrate="10" unit="second"/>
         </arrivalphase>
         <arrivalphase phase="2" duration="10" unit="second">
-            <users arrivalrate="5" unit="second"/>
+            <users arrivalrate="20" unit="second"/>
         </arrivalphase>
         <arrivalphase phase="3" duration="10" unit="second">
-            <users arrivalrate="10" unit="second"/>
+            <users arrivalrate="50" unit="second"/>
         </arrivalphase>
 
-        <!-- <arrivalphase phase="1" duration="1" unit="minute">
-            <users arrivalrate="1" unit="second"/>
-        </arrivalphase>
-        <arrivalphase phase="2" duration="2" unit="minute">
-            <users arrivalrate="10" unit="second"/>
-        </arrivalphase>
-        <arrivalphase phase="3" duration="3" unit="minute">
+        <!-- Test 2 -->
+        <!-- <arrivalphase phase="1" duration="10" unit="second">
             <users arrivalrate="50" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="2" duration="10" unit="second">
+            <users arrivalrate="75" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="3" duration="10" unit="second">
+            <users arrivalrate="100" unit="second"/>
         </arrivalphase> -->
+
+        <!-- Test 3 -->
+        <!-- <arrivalphase phase="1" duration="10" unit="second">
+            <users arrivalrate="100" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="2" duration="10" unit="second">
+            <users arrivalrate="300" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="3" duration="10" unit="second">
+            <users arrivalrate="500" unit="second"/>
+        </arrivalphase> -->
+
+        <!-- Test 4 -->
+        <!-- <arrivalphase phase="1" duration="10" unit="second">
+            <users arrivalrate="200" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="2" duration="10" unit="second">
+            <users arrivalrate="400" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="3" duration="10" unit="second">
+            <users arrivalrate="600" unit="second"/>
+        </arrivalphase> -->
+
+        <!-- Test 5 -->
+        <!-- <arrivalphase phase="1" duration="10" unit="second">
+            <users arrivalrate="300" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="2" duration="10" unit="second">
+            <users arrivalrate="500" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="3" duration="10" unit="second">
+            <users arrivalrate="700" unit="second"/>
+        </arrivalphase> -->
+
+        <!-- Test 5 -->
+        <!-- <arrivalphase phase="1" duration="10" unit="second">
+            <users arrivalrate="600" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="2" duration="10" unit="second">
+            <users arrivalrate="750" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="3" duration="10" unit="second">
+            <users arrivalrate="1000" unit="second"/>
+        </arrivalphase> -->
+
     </load>
 
     <sessions>
@@ -93,13 +140,6 @@
                     }' />
             </request>
 
-
-            <!-- user views results -->
-            <request subst="true">
-                <http url="/room/votes/%%_room_token%%" method="GET" />
-            </request>
-
         </session>
     </sessions>
 </tsung>
-
