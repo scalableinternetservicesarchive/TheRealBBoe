@@ -103,23 +103,46 @@ class RoomsController < ApplicationController
         render json: @room, status: status
     end
 
+    def generate_room_token(room_id)
+
+        token_set_size = 36 ** 5
+        token = (room_id * (36*36*6-1)) % token_set_size
+        s_token = []
+        
+        for j in 0..4
+            
+            digit = token % 36
+            token = token / 36
+            
+            index = (j*2)%5
+            
+            if digit < 10 
+                s_token[index] = digit.to_s
+            else
+                s_token[index] = (digit + 55).chr
+            end
+        end
+        
+        s_token = s_token.join("")
+        return s_token
+    end
+
     def create
         @location_id = params[:location_id]
         @room_name = params[:room_name]
 
         # @location_id = Location.where(name: @location_name).pluck(:id)[0]
         @room = Room.new(name:@room_name, location_id:@location_id)
-
-        # generate token
-        @room.token = loop do
-            new_token = SecureRandom.hex(4)
-            break new_token unless Room.exists? token: new_token
-        end
     
         if @room.save
-            # TODO: Send them success
-            render json: {room_token: @room.token, id: @room.id, session: session}, status: 200
-            # TODO: Send user to their room page
+            # generate token
+            @room.token = generate_room_token(@room.id)
+
+            if @room.save
+                render json: {room_token: @room.token, id: @room.id, session: session}, status: 200
+            else
+                render json: {}, status: 422    
+            end
         else
             render json: {}, status: 422
         end
