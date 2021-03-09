@@ -2,7 +2,8 @@ class RoomsController < ApplicationController
     protect_from_forgery with: :null_session
 
     def index
-        @room = Room.all	
+        @room = Room.all
+#        a = get_votes_in_room("VIW0T")
         render json: @room
     end
 
@@ -71,24 +72,35 @@ class RoomsController < ApplicationController
         return participants
     end
 
-    def get_votes_in_room(room_token)
-        room_id = Room.find_by(token: room_token).id
-        members = Member.where(:room_id => room_id)
-
-        room_votes = {}
-        for member in members do
-            if member != nil and member.votes != nil
-                member_votes = member.votes.split(";");
-                for loc_id in member_votes do 
-                    if !room_votes.key?loc_id 
-                        room_votes[loc_id] = 0
-                    end
-                    room_votes[loc_id] += 1;
-                end 
-            end
+    def get_members(room_token)
+        room = Room.find_by(token: room_token)
+        Rails.cache.fetch("#{room.cache_key_with_version}/members", expires_in: 12.hours) do
+            room.members
         end
+    end
 
-        return room_votes
+    def get_votes_in_room(room_token)
+        room = Room.find_by(token: room_token)
+        # members = room.members
+        
+
+        Rails.cache.fetch("#{room.cache_key_with_version}/room_votes", expires_in: 12.hours) do
+            
+            members = get_members(room_token)
+            room_votes = {}
+            for member in members do
+                if member != nil and member.votes != nil
+                    member_votes = member.votes.split(";");
+                    for loc_id in member_votes do 
+                        if !room_votes.key?loc_id 
+                            room_votes[loc_id] = 0
+                        end
+                        room_votes[loc_id] += 1;
+                    end 
+                end
+            end
+            room_votes
+        end
     end
 
     def show 
