@@ -148,9 +148,31 @@
 
 
         <!-- FLOW: Task (“resturaunt_owner”): Login / Create Account and Add a Restaurant  -->
-        <session name="example" type="ts_http" weight="0.05">
-            <request><http method="GET" url="/restaurants"></http></request>
-            <thinktime value="5" random="true"></thinktime>
+        <session name="example" type="ts_http" weight="1">
+      
+            <!-- home page (models queried for display in react) -->
+            <request><http method="GET" url="/"></http></request>
+            <thinktime value="3" random="true"></thinktime>
+
+            <!-- create guest user -->
+            <request>
+                <dyn_variable name="csrf_token" jsonpath="$.session._csrf_token"/>
+                <dyn_variable name="session_id" jsonpath="$.session.session_id"/>
+                <dyn_variable name="user_id" jsonpath="$.session.user_id"/>
+                <http url='/guest_signin/' method="POST"
+                    content_type='application/json'
+                    contents_from_file="guest.json" />
+            </request>
+
+            <!-- Search through the restaurants -->
+            <for from="1" to="5" incr = "1" var = "page">
+                <request subst = "true">
+                <http method="GET" url="/restaurants?page=%%_page%%"></http>
+                </request>
+                <thinktime value="5" random="true"></thinktime>
+            </for>
+
+            <!-- User adds a restaurant -->
             <request subst="true">
                 <http url="/restaurant" method="POST"
                     content_type='application/json'
@@ -160,15 +182,11 @@
                         &quot;location_id&quot;: &quot;1&quot;
                     }' />
             </request>
+            <thinktime value="10" random="true"></thinktime>
+
+            <!-- User browses the restauants again (only first page, b/c newest is shown first) -->
             <request><http method="GET" url="/restaurants"></http></request>
-            <!-- logout -->
-            <request subst="true">
-                <http url="/log_out" method="GET">
-                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
-                    <add_cookie key="session_id" value= "%%_session_id%%" />
-                    <add_cookie key="user_id" value="%%_user_id%%" />
-                </http>
-            </request>
+
         </session>
 
 
