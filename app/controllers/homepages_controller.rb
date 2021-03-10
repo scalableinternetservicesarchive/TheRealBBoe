@@ -71,8 +71,7 @@ class HomepagesController < ApplicationController
     Rails.application.load_seed
 
     #Restaurants random generation
-
-    @n = 10000
+    @n = 1000
     charset = Array('A'..'Z') + Array('a'..'z')
     begin
       for i in 1..@n.to_i do
@@ -85,6 +84,8 @@ class HomepagesController < ApplicationController
     rescue
       render json: {}, status: 500
     end
+
+
 
     render json: {}, status: 200
   end
