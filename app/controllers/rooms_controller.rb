@@ -19,7 +19,7 @@ class RoomsController < ApplicationController
             
             member = Member.find_by(user_id: user_id, room_id: room.id)
             if !member
-                member = Member.new(user_id: user_id, room_id: room.id, is_host: false)
+                member = Member.new(user_id: user_id, room_id: room.id, is_host: false, name: @user_name)
                 if !member.save
                     render json: {}, status: 422
                 end
@@ -59,11 +59,10 @@ class RoomsController < ApplicationController
         participants = {}
         for member in members do
             if member != nil
-                user  = User.find_by(id: member.user_id)
                 if member.votes != nil
-                    participants[user.name] = true;
+                    participants[member.name] = true;
                 else
-                    participants[user.name] = false;
+                    participants[member.name] = false;
                 end
             end
         end
@@ -118,7 +117,7 @@ class RoomsController < ApplicationController
     
         if @room.save
             # TODO: Send them success
-            render json: {room_token: @room.token, id: @room.id, session: session}, status: 200
+            render json: {room_token: @room.token, id: @room.id, session: session}, status: 201
             # TODO: Send user to their room page
         else
             render json: {}, status: 422
