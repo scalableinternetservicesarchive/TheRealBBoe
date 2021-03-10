@@ -6,6 +6,10 @@ class RoomsController < ApplicationController
         render json: @room
     end
 
+    def existing_room_token
+        render json: {"token": Room.last.token}, status: 200
+    end
+
     def roompage
         if session.key?(:user_id) || params.has_key?(:user_id)
             @room_token = params[:token]
@@ -46,7 +50,7 @@ class RoomsController < ApplicationController
     def room_votes
         room_token = params[:room_token]
         room_votes = get_votes_in_room(room_token)
-        render json: {room_votes: room_votes}, status: 200
+        render json: {room_votes: room_votes, session: session}, status: 200
     end
 
     def get_participants(room_id)
@@ -114,7 +118,7 @@ class RoomsController < ApplicationController
     
         if @room.save
             # TODO: Send them success
-            render json: {room_token: @room.token, id: @room.id}, status: 200
+            render json: {room_token: @room.token, id: @room.id, session: session}, status: 200
             # TODO: Send user to their room page
         else
             render json: {}, status: 422
