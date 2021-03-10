@@ -87,7 +87,7 @@
     
 
         <!-- Guest/Auth user joins a room and votes -->
-        <session name="guest_room_creator" weight="0.6" type="ts_http">
+        <session name="user_joins_room" weight="0.6" type="ts_http">
             <!-- home page (models queried for display in react) -->
             <request>
                 <http url='/' method="GET" />
@@ -148,7 +148,7 @@
 
 
         <!-- FLOW: Task (“resturaunt_owner”): Login / Create Account and Add a Restaurant  -->
-        <session name="example" type="ts_http" weight="1">
+        <session name="add_restaurant" type="ts_http" weight="1">
       
             <!-- home page (models queried for display in react) -->
             <request><http method="GET" url="/"></http></request>
