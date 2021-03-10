@@ -77,8 +77,8 @@ class HomepagesController < ApplicationController
     Rails.application.load_seed
 
     #Restaurants random generation
+    @n = 1000
 
-    @n = 10000
     charset = Array('A'..'Z') + Array('a'..'z')
     begin
       for i in 1..@n.to_i do
