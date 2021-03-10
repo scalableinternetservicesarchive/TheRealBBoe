@@ -72,7 +72,6 @@ class HomepagesController < ApplicationController
 
     #Restaurants random generation
     @n = 1000
-
     charset = Array('A'..'Z') + Array('a'..'z')
     begin
       for i in 1..@n.to_i do

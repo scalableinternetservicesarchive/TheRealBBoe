@@ -2,7 +2,8 @@ class RestaurantsController < ApplicationController
     protect_from_forgery :except => :create 
 
     def index
-        #render json: {}, status: 200
+      @restaurants = Restaurant.page(params[:page]).order('created_at DESC')
+      #render json: {}, status: 200
     end
 
     def show	
