@@ -299,7 +299,8 @@ const Homepage = (props) => {
             }, 
             body: JSON.stringify({
                 room_name: createRoomFields["name"],
-                location_id: createRoomFields["location"]
+                location_id: createRoomFields["location"],
+                user_id: userInfo["id"]
             })
         })
         .then(response => {

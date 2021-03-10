@@ -106,6 +106,7 @@ class RoomsController < ApplicationController
     def create
         @location_id = params[:location_id]
         @room_name = params[:room_name]
+        @user_id = params[:user_id]
 
         # @location_id = Location.where(name: @location_name).pluck(:id)[0]
         @room = Room.new(name:@room_name, location_id:@location_id)
@@ -116,12 +117,17 @@ class RoomsController < ApplicationController
             break new_token unless Room.exists? token: new_token
         end
     
-        if @room.save
-            # TODO: Send them success
-            render json: {room_token: @room.token, id: @room.id, session: session}, status: 200
-            # TODO: Send user to their room page
-        else
+        if !@room.save
             render json: {}, status: 422
+            return
+        end
+
+        @member = Member.new(user_id: @user_id, room_id: @room.id, is_host: true)
+
+        if !@member.save
+            render json: {message: "error"}, status: 422
+        else
+            render json: {room_token: @room.token, id: @room.id, session: session}, status: 200
         end
     end
 end
