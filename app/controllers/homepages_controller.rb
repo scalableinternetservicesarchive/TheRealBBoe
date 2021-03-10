@@ -7,8 +7,8 @@ class HomepagesController < ApplicationController
     }
     @signed_in = false 
     if session.key?:user_id
-      if User.exists?(id: session[:user_id])
-        @user = User.find(session[:user_id])
+      @user = User.find(session[:user_id])
+      if @user
         @user_info["name"] = @user.name
         @user_info["id"] = session[:user_id]
         @user_info["is_auth"] = @user.is_auth
