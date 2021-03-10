@@ -251,7 +251,8 @@ const Homepage = (props) => {
 
     //for logging out
     function handleLogOut(){
-        fetch('/log_out');
+        fetch('/log_out')
+
         setIsLoggedIn(false);
         setIsGuestUser(false);
         setUserInfo({...userInfo, name: "", id: "", is_auth: false});
