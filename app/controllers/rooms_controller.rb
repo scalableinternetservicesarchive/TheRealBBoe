@@ -15,10 +15,13 @@ class RoomsController < ApplicationController
         if session.key?(:user_id) || params.has_key?(:user_id)
             @room_token = params[:token]
             user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
-            room = Room.find_by(token: @room_token)
-            @user_name = User.find_by(id: user_id).name
+            #room = Room.find_by(token: @room_token)
+            room = Room.cached_find_using_token(@room_token)
+            user = User.cached_find(user_id)
+            @user_name = user.name
             
-            member = Member.find_by(user_id: user_id, room_id: room.id)
+            #member = Member.find_by(user_id: user_id, room_id: room.id)
+            member = Member.cached_find(user_id, room.id)
             if !member
                 member = Member.new(user_id: user_id, room_id: room.id, is_host: false)
                 if !member.save
@@ -30,7 +33,8 @@ class RoomsController < ApplicationController
             @participants = get_participants(room.id)
 
             location_id = room.location_id
-            restaurant_list = Restaurant.where(location_id: location_id)
+            #restaurant_list = Restaurant.where(location_id: location_id)
+            restaurant_list = Restaurant.cached_restaurants_in_location(location_id)
             @restaurants = {}
             for restaurant in restaurant_list do
                 @restaurants[restaurant.id] = restaurant
@@ -55,12 +59,12 @@ class RoomsController < ApplicationController
     end
 
     def get_participants(room_id)
-        members = Member.where(:room_id => room_id)
+        members = Member.cached_find_room_members(room_id)
 
         participants = {}
         for member in members do
             if member != nil
-                user  = User.find_by(id: member.user_id)
+                user = User.cached_find(member.user_id)
                 if member.votes != nil
                     participants[user.name] = true;
                 else
@@ -72,21 +76,12 @@ class RoomsController < ApplicationController
         return participants
     end
 
-    def get_members(room_token)
-        room = Room.find_by(token: room_token)
-        Rails.cache.fetch("#{room.cache_key_with_version}/members", expires_in: 12.hours) do
-            room.members
-        end
-    end
-
     def get_votes_in_room(room_token)
-        room = Room.find_by(token: room_token)
-        # members = room.members
-        
+        room = Room.cached_find_using_token(room_token)
 
         Rails.cache.fetch("#{room.cache_key_with_version}/room_votes", expires_in: 12.hours) do
             
-            members = get_members(room_token)
+            members = Member.cached_find_room_members(room.id)
             room_votes = {}
             for member in members do
                 if member != nil and member.votes != nil
