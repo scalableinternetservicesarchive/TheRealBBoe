@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tsung SYSTEM "/usr/local/Cellar/tsung/1.7.0/share/tsung/tsung-1.0.dtd">
+<tsung loglevel="warning">
+
+    <clients>
+        <client host="localhost" use_controller_vm="true" maxusers="1000000000000"/>
+    </clients>
+
+    <servers>
+        <!-- <server host="demo2.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/> -->
+        <server host="localhost" port="3000" type="tcp"/>
+    </servers>
+
+    <load>
+        <arrivalphase phase="1" duration="30" unit="second">
+            <users arrivalrate="15" unit="second"/>
+        </arrivalphase>
+
+    </load>
+
+    <sessions>
+        <!-- FLOW: Guest Room Creator and Vote  -->
+        <session name="guest_room_creator" weight="0.2" type="ts_http">
+            <!-- home page (models queried for display in react) -->
+            <request>
+                <http url='/' method="GET" />
+            </request>
+
+            <!-- create guest user -->
+            <request>
+                <dyn_variable name="csrf_token" jsonpath="$.session._csrf_token"/>
+                <dyn_variable name="session_id" jsonpath="$.session.session_id"/>
+                <dyn_variable name="user_id" jsonpath="$.session.user_id"/>
+                <http url='/guest_signin/' method="POST"
+                    content_type='application/json'
+                    contents_from_file="guest.json" />
+            </request>   
+
+            <!-- guest creates room -->
+            <request>
+                <dyn_variable name="room_token" jsonpath="$.room_token"/>
+                <dyn_variable name="room_id" jsonpath="$.id"/>
+                <http url="/room" method="POST"
+                    content_type='application/json'
+                    contents_from_file="room.json" />
+            </request>
+
+            <request subst="true">
+                <http url="/room/%%_room_token%%">
+                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                    <add_cookie key="session_id" value= "%%_session_id%%" />
+                    <add_cookie key="user_id" value="%%_user_id%%" />
+                </http>
+            </request>
+
+            <!-- user takes time to make decision-->
+            <thinktime min="2" max="5" random="true"></thinktime>
+
+
+            <!-- user votes -->
+            <request subst="true">
+                <http url="/member/update_vote" method="POST"
+                    content_type='application/json'
+                    contents='{
+                        &quot;user_id&quot;: &quot;%%_user_id%%&quot;,
+                        &quot;token&quot;: &quot;%%_room_token%%&quot;,
+                        &quot;votes&quot;: &quot;3;4;5&quot;
+                    }' />
+            </request>
+
+
+            <!-- user views results -->
+            <request subst="true">
+                <http url="/room/votes/%%_room_token%%" method="GET" />
+            </request>
+
+            <!-- logout -->
+            <request subst="true">
+                <http url="/log_out" method="GET">
+                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                    <add_cookie key="session_id" value= "%%_session_id%%" />
+                    <add_cookie key="user_id" value="%%_user_id%%" />
+                </http>
+            </request>
+
+        </session>
+    
+
+        <!-- Guest/Auth user joins a room and votes -->
+        <!-- <session name="guest_room_creator" weight="0.6" type="ts_http"> -->
+            <!-- home page (models queried for display in react) -->
+            <!-- <request>
+                <http url='/' method="GET" />
+            </request> -->
+
+            <!-- create guest user -->
+            <!-- <request>
+                <dyn_variable name="csrf_token" jsonpath="$.session._csrf_token"/>
+                <dyn_variable name="session_id" jsonpath="$.session.session_id"/>
+                <dyn_variable name="user_id" jsonpath="$.session.user_id"/>
+                <http url='/guest_signin/' method="POST"
+                    content_type='application/json'
+                    contents_from_file="guest.json" />
+            </request> -->
+
+            <!-- get token of last room made -->
+            <!-- <request subst="true">
+                <dyn_variable name="room_token" jsonpath="$.token"/>
+                <http url="/existing_token" />
+            </request>          -->
+
+            <!-- <request subst="true">
+                <http url="/room/%%_room_token%%">
+                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                    <add_cookie key="session_id" value= "%%_session_id%%" />
+                    <add_cookie key="user_id" value="%%_user_id%%" />
+                </http>
+            </request> -->
+
+            <!-- user takes time to make decision-->
+            <!-- <thinktime min="2" max="5" random="true"></thinktime> -->
+
+            <!-- user votes -->
+            <!-- <request subst="true">
+                <http url="/member/update_vote" method="POST"
+                    content_type='application/json'
+                    contents='{
+                        &quot;user_id&quot;: &quot;%%_user_id%%&quot;,
+                        &quot;token&quot;: &quot;%%_room_token%%&quot;,
+                        &quot;votes&quot;: &quot;3;4;5&quot;
+                    }' />
+            </request> -->
+
+            <!-- user views results -->
+            <!-- <request subst="true">
+                <http url="/room/votes/%%_room_token%%" method="GET" />
+            </request> -->
+
+            <!-- logout -->
+            <!-- <request subst="true">
+                <http url="/log_out" method="GET">
+                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                    <add_cookie key="session_id" value= "%%_session_id%%" />
+                    <add_cookie key="user_id" value="%%_user_id%%" />
+                </http>
+            </request>
+        </session> -->
+
+
+        <!-- FLOW: Task (“resturaunt_owner”): Login / Create Account and Add a Restaurant  -->
+        <!-- <session name="example" type="ts_http" weight="0.05">
+            <request><http method="GET" url="/restaurants"></http></request>
+            <thinktime value="5" random="true"></thinktime>
+            <request subst="true">
+                <http url="/restaurant" method="POST"
+                    content_type='application/json'
+                    contents='{
+                        &quot;name&quot;: &quot;TsungRestaurant&quot;,
+                        &quot;description&quot;: &quot;TRDesc&quot;,
+                        &quot;location_id&quot;: &quot;1&quot;
+                    }' />
+            </request>
+            <request><http method="GET" url="/restaurants"></http></request> -->
+            <!-- logout -->
+            <!-- <request subst="true">
+                <http url="/log_out" method="GET">
+                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                    <add_cookie key="session_id" value= "%%_session_id%%" />
+                    <add_cookie key="user_id" value="%%_user_id%%" />
+                </http>
+            </request>
+        </session> -->
+
+
+        <!-- FLOW: Task (“auth_view_history”): Login to Authenticated Account and View results from a past room -->
+        <!-- <session name="past_room_view" weight="0.15" type="ts_http"> -->
+            <!-- home page (models queried for display in react) -->
+            <!-- <request>
+                <http url='/' method="GET" />
+            </request> -->
+
+            <!-- log in : need to choose random authenticated user for logging in-->
+            <!-- <request>
+                <dyn_variable name="user_id" jsonpath="$.user_data.id"/>
+                <dyn_variable name="user_name" jsonpath="$.user_data.name"/>
+                <dyn_variable name="user_username" jsonpath="$.user_data.username"/>
+                <http url='/signin/' method="POST"
+                    content_type='application/json'
+                      contents_from_file="userLogin.json" />
+            </request> -->
+
+            <!-- get rooms for joining -->
+            <!-- <request subst="true">
+                <dyn_variable name="rooms" jsonpath="$.rooms"/>
+                <http url="/get_rooms/?user_id=%%_user_id%%" method="GET" />
+            </request> -->
+
+            <!-- user chooses random token-->
+            <!-- <thinktime min="2" max="3" random="true"></thinktime> -->
+
+            <!-- select room from drop down -->
+            <!-- <request subst="true">
+                <http url="/room/join" method="POST"
+                    content_type='application/json'
+                    contents='{
+                        &quot;token&quot;: &quot;%%_rooms[0][room_token]%%&quot;
+                    }' />
+            </request> -->
+
+            <!-- logout -->
+            <!-- <request subst="true">
+                <http url="/log_out" method="GET">
+                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                    <add_cookie key="session_id" value= "%%_session_id%%" />
+                    <add_cookie key="user_id" value="%%_user_id%%" />
+                </http>
+            </request> -->
+
+        <!-- </session> -->
+
+    </sessions>
+
+</tsung>
