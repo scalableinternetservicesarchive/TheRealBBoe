@@ -86,3 +86,37 @@ Restaurant.find_or_create_by(name: "Spudnuts", location_id: 1, description: "Don
 Restaurant.find_or_create_by(name: "Caje", location_id: 1, description: "Hip Coffee Shop")
 Restaurant.find_or_create_by(name: "Lao Wang", location_id: 1, description: "Asian food")
 Restaurant.find_or_create_by(name: "Shushiya", location_id: 1, description: "Shushi place")
+
+
+#Restaurants random generation
+@n = 1000
+charset = Array('A'..'Z') + Array('a'..'z')
+
+restaurants = []
+for i in 1..@n.to_i do
+    @location = rand(1..3)
+    @name = "RandName"+ Array.new(10) { charset.sample }.join
+    @desc = "RandDesc"+ Array.new(42) { charset.sample }.join
+    restaurants << {name: @name, description:@desc, location_id:@location}
+end
+Restaurant.create(restaurants)
+
+
+# Todo: @Wei-Yee clean up this when you merge
+rooms = []
+for i in 100..200 do
+    rooms << {token: i.to_s, name: "EMPTY ROOM", location_id: 1}
+end
+Room.create(rooms)
+
+users = []
+for i in 0..1000 do
+    users << {name: "FAKE USER", username: i.to_s, password: 'password', is_auth: true}
+end
+User.create(users)
+
+members = []
+for i in 0..1000 do
+    members << {room_id: rand(900)+11, user_id: i+1, votes:"11;12;13", is_host: false}
+end
+Member.create(members)
