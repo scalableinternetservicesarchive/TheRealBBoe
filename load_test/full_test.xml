@@ -7,12 +7,12 @@
     </clients>
 
     <servers>
-        <server host="mli01.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/>
-        <!-- <server host="localhost" port="3000" type="tcp"/> -->
+        <!-- <server host="mli01.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/> -->
+        <server host="localhost" port="3000" type="tcp"/>
     </servers>
 
     <load>
-        <arrivalphase phase="1" duration="30" unit="second">
+        <arrivalphase phase="1" duration="10" unit="second">
             <users arrivalrate="15" unit="second"/>
         </arrivalphase>
     </load>
@@ -43,7 +43,11 @@
                     <dyn_variable name="room_id" jsonpath="$.id"/>
                     <http url="/room" method="POST"
                         content_type='application/json'
-                        contents_from_file="room.json" />
+                        contents_from_file="room.json" >
+                        <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                        <add_cookie key="session_id" value= "%%_session_id%%" />
+                        <add_cookie key="user_id" value="%%_user_id%%" />
+                    </http>
                 </request>
 
                 <request subst="true">
@@ -57,7 +61,6 @@
                 <!-- user takes time to make decision-->
                 <thinktime min="2" max="5" random="true"></thinktime>
 
-
                 <!-- user votes -->
                 <request subst="true">
                     <http url="/member/update_vote" method="POST"
@@ -66,13 +69,20 @@
                             &quot;user_id&quot;: &quot;%%_user_id%%&quot;,
                             &quot;token&quot;: &quot;%%_room_token%%&quot;,
                             &quot;votes&quot;: &quot;3;4;5&quot;
-                        }' />
+                        }' >
+                        <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                        <add_cookie key="session_id" value= "%%_session_id%%" />
+                        <add_cookie key="user_id" value="%%_user_id%%" />
+                    </http>
                 </request>
-
 
                 <!-- user views results -->
                 <request subst="true">
-                    <http url="/room/votes/%%_room_token%%" method="GET" />
+                    <http url="/room/votes/%%_room_token%%" method="GET" >
+                        <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                        <add_cookie key="session_id" value= "%%_session_id%%" />
+                        <add_cookie key="user_id" value="%%_user_id%%" />
+                    </http>
                 </request>
 
                 <!-- logout -->
@@ -132,12 +142,20 @@
                             &quot;user_id&quot;: &quot;%%_user_id%%&quot;,
                             &quot;token&quot;: &quot;%%_room_token%%&quot;,
                             &quot;votes&quot;: &quot;3;4;5&quot;
-                        }' />
+                        }' >
+                        <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                        <add_cookie key="session_id" value= "%%_session_id%%" />
+                        <add_cookie key="user_id" value="%%_user_id%%" />
+                    </http>
                 </request>
 
                 <!-- user views results -->
                 <request subst="true">
-                    <http url="/room/votes/%%_room_token%%" method="GET" />
+                    <http url="/room/votes/%%_room_token%%" method="GET">
+                        <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                        <add_cookie key="session_id" value= "%%_session_id%%" />
+                        <add_cookie key="user_id" value="%%_user_id%%" />
+                    </http>
                 </request>
 
                 <!-- logout -->
@@ -158,7 +176,6 @@
             <transaction name="add_restaurant">
                 <!-- home page (models queried for display in react) -->
                 <request><http method="GET" url="/"></http></request>
-                <thinktime value="3" random="true"></thinktime>
 
                 <!-- create guest user -->
                 <request>
@@ -173,9 +190,13 @@
                 <!-- Search through the restaurants -->
                 <for from="1" to="5" incr = "1" var = "page">
                     <request subst = "true">
-                    <http method="GET" url="/restaurants?page=%%_page%%"></http>
+                    <http method="GET" url="/restaurants?page=%%_page%%">
+                        <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                        <add_cookie key="session_id" value= "%%_session_id%%" />
+                        <add_cookie key="user_id" value="%%_user_id%%" />
+                    </http>
                     </request>
-                    <thinktime value="5" random="true"></thinktime>
+                    <thinktime value="1" random="true"></thinktime>
                 </for>
 
                 <!-- User adds a restaurant -->
@@ -186,12 +207,21 @@
                             &quot;name&quot;: &quot;TsungRestaurant&quot;,
                             &quot;description&quot;: &quot;TRDesc&quot;,
                             &quot;location_id&quot;: &quot;1&quot;
-                        }' />
+                        }'>
+                        <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                        <add_cookie key="session_id" value= "%%_session_id%%" />
+                        <add_cookie key="user_id" value="%%_user_id%%" />
+                    </http>
                 </request>
-                <thinktime value="10" random="true"></thinktime>
-
+                
                 <!-- User browses the restauants again (only first page, b/c newest is shown first) -->
-                <request><http method="GET" url="/restaurants"></http></request>
+                <request>
+                    <http method="GET" url="/restaurants">
+                        <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                        <add_cookie key="session_id" value= "%%_session_id%%" />
+                        <add_cookie key="user_id" value="%%_user_id%%" />
+                    </http>
+                </request>
             </transaction>
         </session>
 
@@ -207,6 +237,8 @@
 
                 <!-- log in : need to choose random authenticated user for logging in-->
                 <request>
+                    <dyn_variable name="csrf_token" jsonpath="$.session._csrf_token"/>
+                    <dyn_variable name="session_id" jsonpath="$.session.session_id"/>                    
                     <dyn_variable name="user_id" jsonpath="$.user_data.id"/>
                     <dyn_variable name="user_name" jsonpath="$.user_data.name"/>
                     <dyn_variable name="user_username" jsonpath="$.user_data.username"/>
@@ -218,7 +250,11 @@
                 <!-- get rooms for joining -->
                 <request subst="true">
                     <dyn_variable name="rooms" jsonpath="$.rooms"/>
-                    <http url="/get_rooms/?user_id=%%_user_id%%" method="GET" />
+                    <http url="/get_rooms/?user_id=%%_user_id%%" method="GET">
+                        <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                        <add_cookie key="session_id" value= "%%_session_id%%" />
+                        <add_cookie key="user_id" value="%%_user_id%%" />
+                    </http>
                 </request>
 
                 <!-- user chooses random token-->
@@ -230,7 +266,11 @@
                         content_type='application/json'
                         contents='{
                             &quot;token&quot;: &quot;%%_rooms[0][room_token]%%&quot;
-                        }' />
+                        }' >
+                        <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                        <add_cookie key="session_id" value= "%%_session_id%%" />
+                        <add_cookie key="user_id" value="%%_user_id%%" />
+                    </http>
                 </request>
 
                 <!-- logout -->
