@@ -89,7 +89,7 @@ Restaurant.find_or_create_by(name: "Shushiya", location_id: 1, description: "Shu
 
 
 #Restaurants random generation
-@n = 1000
+@n = 10
 charset = Array('A'..'Z') + Array('a'..'z')
 
 restaurants = []
@@ -117,6 +117,6 @@ User.create(users)
 
 members = []
 for i in 0..1000 do
-    members << {room_id: rand(900)+11, user_id: i+1, votes:"11;12;13", is_host: false}
+    members << {room_id: 15, user_id: i+1, votes:"11;12;13", is_host: false}
 end
 Member.create(members)
