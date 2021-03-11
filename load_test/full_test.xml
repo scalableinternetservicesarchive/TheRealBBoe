@@ -148,7 +148,7 @@
 
 
         <!-- FLOW: Task (“resturaunt_owner”): Login / Create Account and Add a Restaurant  -->
-        <session name="add_restaurant" type="ts_http" weight="1">
+        <session name="add_restaurant" type="ts_http" weight="0.05">
       
             <!-- home page (models queried for display in react) -->
             <request><http method="GET" url="/"></http></request>
