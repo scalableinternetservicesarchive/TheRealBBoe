@@ -117,6 +117,6 @@ User.create(users)
 
 members = []
 for i in 0..1000 do
-    members << {room_id: rand(900)+11, user_id: i+1, votes:"11;12;13", is_host: false}
+    members << {room_id: rand(90)+11, user_id: i+1, votes:"11;12;13", is_host: false}
 end
 Member.create(members)
