@@ -13,7 +13,25 @@
 
     <load>
         <arrivalphase phase="1" duration="10" unit="second">
-            <users arrivalrate="15" unit="second"/>
+            <users arrivalrate="2" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="2" duration="10" unit="second">
+            <users arrivalrate="4" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="3" duration="10" unit="second">
+            <users arrivalrate="8" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="4" duration="10" unit="second">
+            <users arrivalrate="16" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="5" duration="10" unit="second">
+            <users arrivalrate="32" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="6" duration="10" unit="second">
+            <users arrivalrate="64" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="7" duration="10" unit="second">
+            <users arrivalrate="128" unit="second"/>
         </arrivalphase>
     </load>
 
@@ -249,7 +267,7 @@
 
                 <!-- get rooms for joining -->
                 <request subst="true">
-                    <dyn_variable name="rooms" jsonpath="$.rooms"/>
+                    <dyn_variable name="room_token" jsonpath="$.rooms[0].room_token"/>
                     <http url="/get_rooms/?user_id=%%_user_id%%" method="GET">
                         <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
                         <add_cookie key="session_id" value= "%%_session_id%%" />
@@ -265,7 +283,7 @@
                     <http url="/room/join" method="POST"
                         content_type='application/json'
                         contents='{
-                            &quot;token&quot;: &quot;%%_rooms[0][room_token]%%&quot;
+                            &quot;token&quot;: &quot;%%_room_token%%&quot;
                         }' >
                         <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
                         <add_cookie key="session_id" value= "%%_session_id%%" />
@@ -281,7 +299,6 @@
                         <add_cookie key="user_id" value="%%_user_id%%" />
                     </http>
                 </request>
-
             </transaction>
         </session>
     </sessions>
