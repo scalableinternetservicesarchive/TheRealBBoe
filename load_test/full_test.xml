@@ -7,7 +7,7 @@
     </clients>
 
     <servers>
-        <server host="aprilsanchez.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/>
+        <server host="mli01.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/>
         <!-- <server host="localhost" port="3000" type="tcp"/> -->
     </servers>
 
@@ -15,7 +15,6 @@
         <arrivalphase phase="1" duration="30" unit="second">
             <users arrivalrate="15" unit="second"/>
         </arrivalphase>
-
     </load>
 
     <sessions>
@@ -82,9 +81,8 @@
                     <add_cookie key="user_id" value="%%_user_id%%" />
                 </http>
             </request>
-
         </session>
-    
+
 
         <!-- Guest/Auth user joins a room and votes -->
         <session name="user_joins_room" weight="0.6" type="ts_http">
@@ -149,7 +147,7 @@
 
         <!-- FLOW: Task (“resturaunt_owner”): Login / Create Account and Add a Restaurant  -->
         <session name="add_restaurant" type="ts_http" weight="0.05">
-      
+
             <!-- home page (models queried for display in react) -->
             <request><http method="GET" url="/"></http></request>
             <thinktime value="3" random="true"></thinktime>
@@ -187,6 +185,14 @@
             <!-- User browses the restauants again (only first page, b/c newest is shown first) -->
             <request><http method="GET" url="/restaurants"></http></request>
 
+            <!-- logout -->
+            <request subst="true">
+                <http url="/log_out" method="GET">
+                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                    <add_cookie key="session_id" value= "%%_session_id%%" />
+                    <add_cookie key="user_id" value="%%_user_id%%" />
+                </http>
+            </request>
         </session>
 
 
@@ -233,9 +239,6 @@
                     <add_cookie key="user_id" value="%%_user_id%%" />
                 </http>
             </request>
-
         </session>
-
     </sessions>
-
 </tsung>
