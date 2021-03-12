@@ -7,10 +7,11 @@ class HomepagesController < ApplicationController
     }
     @signed_in = false 
     if session.key?:user_id
-      if User.exists?(id: session[:user_id])
-        @user_info["name"] = User.find(session[:user_id]).name
+      @user = User.find(session[:user_id])
+      if @user
+        @user_info["name"] = @user.name
         @user_info["id"] = session[:user_id]
-        @user_info["is_auth"] = User.find(session[:user_id]).is_auth
+        @user_info["is_auth"] = @user.is_auth
         @signed_in = true
       else
         session.delete(:user_id)
