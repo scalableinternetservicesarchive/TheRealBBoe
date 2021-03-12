@@ -8,7 +8,7 @@ class UsersController < ApplicationController
 
         if params.has_key?(:room_id)	
             # get all users part of the room	
-            members = Member.where(room_id: params[:room_id])	
+            members = Member.cached_find_room_members(params[:room_id])
             user_ids = members.map(&:user_id)	
             @user = @user.find(id=user_ids)	
         end	
@@ -17,7 +17,7 @@ class UsersController < ApplicationController
     end	
 
     def show	
-        @user = User.find_by(params[:id])	
+        @user = User.cached_find(params[:id])
 
         if @user
             body = @user
@@ -35,7 +35,7 @@ class UsersController < ApplicationController
 
     def create	
         @username = params[:username]
-        if User.find_by(username: @username)
+        if User.cached_find_username(@username)
             render json: {}, status: 400
         else
             @user = User.new(user_params)	
@@ -52,7 +52,7 @@ class UsersController < ApplicationController
 
     def destroy 	
         if User.exists? id: params[:id]	
-            @user = User.find(params[:id])	
+            @user = User.cached_find(params[:id])
             @user.destroy	
             render json: @user	
         else	

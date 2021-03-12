@@ -39,7 +39,7 @@ class HomepagesController < ApplicationController
   def add_guest_name
     @guest_name = params[:name]
     @id = session[:user_id]
-    @user = User.find_by(id: @id)
+    @user = User.cached_find(@id)
     if @user
       @user.update_attribute(:name, @guest_name)
       render json: {user_id: @id}, status: 200
