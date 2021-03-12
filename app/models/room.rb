@@ -4,6 +4,7 @@ class Room < ApplicationRecord
 
 	after_commit :flush_cache
     
+
     #cached functions
     def self.cached_find_using_token(token)
         Rails.cache.fetch([name, token]) {

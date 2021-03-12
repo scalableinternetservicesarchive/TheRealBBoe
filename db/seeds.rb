@@ -28,11 +28,11 @@ Room.find_or_create_by(token: "Y0Z0B", name: "Take decision", location_id: 1)
 Room.find_or_create_by(token: "X0Z0H", name: "Food hangout", location_id: 1)
 Room.find_or_create_by(token: "W0Z0N", name: "Let's party", location_id: 1)
 Room.find_or_create_by(token: "V0Z0T", name: "Where to go?", location_id: 1)
-Room.find_or_create_by(token: "U0Z0Z", name: "Quick decision", location_id: 1)
-Room.find_or_create_by(token: "T1Z05", name: "Room1", location_id: 1)
-Room.find_or_create_by(token: "S1Z0B", name: "Room2", location_id: 1)
-Room.find_or_create_by(token: "R1Z0H", name: "Room3", location_id: 1)
-Room.find_or_create_by(token: "Q1Z0N", name: "Room4", location_id: 1)
+# Room.find_or_create_by(token: "U0Z0Z", name: "Quick decision", location_id: 1)
+# Room.find_or_create_by(token: "T1Z05", name: "Room1", location_id: 1)
+# Room.find_or_create_by(token: "S1Z0B", name: "Room2", location_id: 1)
+# Room.find_or_create_by(token: "R1Z0H", name: "Room3", location_id: 1)
+# Room.find_or_create_by(token: "Q1Z0N", name: "Room4", location_id: 1)
 
 Member.find_or_create_by(room_id: 1, user_id: 1, is_host: false)
 Member.find_or_create_by(room_id: 1, user_id: 2, is_host: false)
@@ -87,3 +87,31 @@ Restaurant.find_or_create_by(name: "Spudnuts", location_id: 1, description: "Don
 Restaurant.find_or_create_by(name: "Caje", location_id: 1, description: "Hip Coffee Shop")
 Restaurant.find_or_create_by(name: "Lao Wang", location_id: 1, description: "Asian food")
 Restaurant.find_or_create_by(name: "Shushiya", location_id: 1, description: "Shushi place")
+
+
+def generate_room_token(room_id)
+    token_set_size = 36 ** 5
+    token = (room_id * (36*36*6-1)) % token_set_size
+    s_token = []
+    
+    for j in 0..4
+        digit = token % 36
+        token = token / 36
+        index = (j*2)%5
+        if digit < 10 
+            s_token[index] = digit.to_s
+        else
+            s_token[index] = (digit + 55).chr
+        end
+    end
+    s_token = s_token.join("")
+    return s_token
+end
+
+room_count = Room.count
+new_rooms = []
+for i in (room_count+1)..500 do
+	token = generate_room_token(i)
+	new_rooms << {token: token, name: "Room"+i.to_s, location_id: (i%3)+1}
+end
+Room.create(new_rooms)
