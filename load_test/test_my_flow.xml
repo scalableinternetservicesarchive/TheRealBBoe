@@ -3,35 +3,35 @@
 <tsung loglevel="warning">
 
     <clients>
-        <client host="localhost" use_controller_vm="true" maxusers="1000000000000"/>
+        <client host="localhost" use_controller_vm="true" maxusers="300000"/>
     </clients>
 
     <servers>
         <server host="laboni.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/>
         <!-- <server host="localhost" port="3000" type="tcp"/> -->
     </servers>
-
+    
     <load>
         <arrivalphase phase="1" duration="60" unit="second">
-            <users arrivalrate="1" unit="second"/>
-        </arrivalphase>
-        <arrivalphase phase="2" duration="60" unit="second">
             <users arrivalrate="2" unit="second"/>
         </arrivalphase>
-        <arrivalphase phase="3" duration="60" unit="second">
+        <arrivalphase phase="2" duration="60" unit="second">
             <users arrivalrate="4" unit="second"/>
         </arrivalphase>
-        <arrivalphase phase="4" duration="60" unit="second">
+        <arrivalphase phase="3" duration="60" unit="second">
             <users arrivalrate="8" unit="second"/>
         </arrivalphase>
-        <arrivalphase phase="5" duration="60" unit="second">
+        <arrivalphase phase="4" duration="60" unit="second">
             <users arrivalrate="16" unit="second"/>
         </arrivalphase>
-        <arrivalphase phase="6" duration="60" unit="second">
+        <arrivalphase phase="5" duration="60" unit="second">
             <users arrivalrate="32" unit="second"/>
         </arrivalphase>
-         <arrivalphase phase="7" duration="60" unit="second">
+        <arrivalphase phase="6" duration="60" unit="second">
             <users arrivalrate="64" unit="second"/>
+        </arrivalphase>
+         <arrivalphase phase="7" duration="60" unit="second">
+            <users arrivalrate="128" unit="second"/>
         </arrivalphase> 
     </load>
 
@@ -55,23 +55,22 @@
 
 
             <!-- get rooms for joining -->
+            
             <request subst="true">
                 <dyn_variable name="rooms" jsonpath="$.rooms"/>
                 <http url="/get_rooms/?user_id=%%_user_id%%" method="GET" />
             </request>
 
-            <!-- user chooses random token-->
-            <thinktime min="2" max="3" random="true"></thinktime>
+            <!-- user takes time to make decision-->
+            <thinktime min="1" max="3" random="true"></thinktime>
 
             <!-- select room from drop down -->
+         
             <request subst="true">
                 <http url="/room/join" method="POST"
                     content_type='application/json'
-                    contents='{
-                        &quot;token&quot;: &quot;%%_rooms[0][room_token]%%&quot;
-                    }' />
+                    contents_from_file="token.json" />
             </request>
-
 
 
         </session>

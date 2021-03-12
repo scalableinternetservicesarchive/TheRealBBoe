@@ -5,7 +5,7 @@ ruby '2.7.2'
 
 gem 'bootstrap', '~> 4.3.1'
 gem 'react-rails'
-
+gem 'will_paginate', '~> 3.1.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
 gem 'rails', '~> 6.1.2', '>= 6.1.2.1'

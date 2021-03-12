@@ -29,7 +29,7 @@ class RoomsController < ApplicationController
             @participants = get_participants(room.id)
 
             location_id = room.location_id
-            restaurant_list = Restaurant.where(location_id: location_id)
+            restaurant_list = Restaurant.where(location_id: location_id).paginate(:page => params[:page]).order('id DESC')
             @restaurants = {}
             for restaurant in restaurant_list do
                 @restaurants[restaurant.id] = restaurant
@@ -54,9 +54,34 @@ class RoomsController < ApplicationController
     end
 
     def get_participants(room_id)
+    #def get_participants
         members = Member.where(:room_id => room_id)
-
+       # members = Member.where(:room_id=> params[:room_id])
+        member_ids_votes = members.pluck(:user_id, :votes)
+        member_ids = members.pluck(:user_id)
+        member_votes = members.pluck(:votes)
+        users = User.find(member_ids)
+        ids_with_votes = []
+        ids_without_votes = []
+        for member in member_ids_votes do
+            if member[1]!= nil
+                ids_with_votes.push(member[0])
+            end
+        end
         participants = {}
+        for user in users do
+            if ids_with_votes.include? user.id
+                participants[user.name] = true
+            else
+                participants[user.name] = false
+            end 
+        end
+
+        
+
+        #render json:participants
+        
+        '''participants = {}
         for member in members do
             if member != nil
                 if member.votes != nil
@@ -65,7 +90,7 @@ class RoomsController < ApplicationController
                     participants[member.name] = false;
                 end
             end
-        end
+        end'''
 
         return participants
     end
@@ -87,7 +112,7 @@ class RoomsController < ApplicationController
             end
         end
 
-        return room_votes
+        return Hash[room_votes.sort_by {|k,v| v}[0..10]]
     end
 
     def show 
