@@ -97,9 +97,8 @@ class RoomsController < ApplicationController
                     end 
                 end
             end
-            room_votes
+            return Hash[room_votes.sort_by {|k,v| v}[0..10]]
         end
-        return Hash[room_votes.sort_by {|k,v| v}[0..10]]
     end
 
     def show 
