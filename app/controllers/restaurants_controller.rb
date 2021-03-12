@@ -5,6 +5,10 @@ class RestaurantsController < ApplicationController
         #render json: {}, status: 200
     end
 
+    def redirect_to_restaurants
+      redirect_to "/restaurants/"
+    end
+
     def show	
         @restaurant = Restaurant.find(params[:id])	
         render json: @restaurant

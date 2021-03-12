@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     # restaurant operations
     get 'restaurant', to: 'restaurants#show'
     get 'restaurants', to: 'restaurants#index'
+    get 'redirect_to_restaurants', to: 'restaurants#redirect_to_restaurants'
     post 'restaurant', to: 'restaurants#create'
     get 'restaurant/seed', to: 'restaurants#seed' 
 
@@ -36,6 +37,7 @@ Rails.application.routes.draw do
 
     # homepage
     root 'homepages#index'
+    get 'return_to_root', to: 'homepages#redirect_to_root'
     post 'guest_signin', to: 'homepages#signin_as_guest'
     get 'log_out', to: 'homepages#log_out'
     post 'signin', to: 'homepages#signin'

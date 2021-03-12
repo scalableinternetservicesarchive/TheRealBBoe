@@ -20,8 +20,28 @@ const Restaurants = (props) => {
         )
     });
 
+    const backToRoot=() => {
+        fetch('/return_to_root', {
+            method: 'GET', 
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                console.log("in redirection")
+                window.location.href = response.url;
+            }
+            else{
+                console.log(response);
+            }
+        })
+    }
+
     return (
         <div className="container">
+            <button type="button" className="btn btn-primary" onClick={backToRoot}>Back</button>
             <h1>RESTAURANTS AS LIST</h1>
             <p>Name : Description @ Location</p>
             {rl}

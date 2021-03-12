@@ -72,4 +72,8 @@ class HomepagesController < ApplicationController
 
     render json: {}, status: 200
   end
+
+  def redirect_to_root
+    redirect_to "/"
+  end
 end
