@@ -61,7 +61,7 @@ class HomepagesController < ApplicationController
     if @user
     	session[:user_id] = @user.id
         session[:is_auth] = @user.is_auth
-        render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth: @user.is_auth}}, status: 200
+        render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth: @user.is_auth}, session: session}, status: 200
     else
        render json: {params: params}, status: 404
     end
@@ -75,22 +75,6 @@ class HomepagesController < ApplicationController
     Location.delete_all
 
     Rails.application.load_seed
-
-    #Restaurants random generation
-    @n = 1000
-
-    charset = Array('A'..'Z') + Array('a'..'z')
-    begin
-      for i in 1..@n.to_i do
-        @location = rand(1..3)
-        @name = "RandName"+ Array.new(10) { charset.sample }.join
-        @desc = "RandDesc"+ Array.new(42) { charset.sample }.join
-        @restaurant = Restaurant.new(name: @name, description:@desc, location_id:@location)
-        @restaurant.save
-      end
-    rescue
-      render json: {}, status: 500
-    end
 
     render json: {}, status: 200
   end
