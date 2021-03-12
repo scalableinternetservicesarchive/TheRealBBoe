@@ -110,13 +110,13 @@ end
 Room.create(rooms)
 
 users = []
-for i in 0..1000 do
+for i in 0..10 do
     users << {name: "FAKE USER", username: i.to_s, password: 'password', is_auth: true}
 end
 User.create(users)
 
 members = []
-for i in 0..1000 do
-    members << {room_id: 15, user_id: i+1, votes:"11;12;13", is_host: false}
+for i in 0..100 do
+    members << {room_id: i+11, user_id: 3, votes:"11;12;13", is_host: false}
 end
 Member.create(members)
