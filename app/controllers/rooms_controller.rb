@@ -53,7 +53,7 @@ class RoomsController < ApplicationController
         render json: {room_votes: room_votes, session: session}, status: 200
     end
 
-    def get_participants(room_id)
+  '''  def get_participants(room_id)
         members = Member.where(:room_id => room_id)
 
         participants = {}
@@ -70,6 +70,81 @@ class RoomsController < ApplicationController
 
         return participants
     end
+    '''
+    def get_participants(room_id)
+        #def get_participants
+            members = Member.where(:room_id => room_id)
+           # members = Member.where(:room_id=> params[:room_id])
+            member_ids_votes = members.pluck(:user_id, :votes)
+            member_ids = members.pluck(:user_id)
+            member_votes = members.pluck(:votes)
+            users = User.find(member_ids)
+            ids_with_votes = []
+            ids_without_votes = []
+            for member in member_ids_votes do
+                if member[1]!= nil
+                    ids_with_votes.push(member[0])
+                end
+            end
+            participants = {}
+            for user in users do
+                if ids_with_votes.include? user.id
+                    participants[user.name] = true
+                else
+                    participants[user.name] = false
+                end 
+            end
+    
+            
+    
+            #render json:participants
+            
+            '''participants = {}
+            for member in members do
+                if member != nil
+                    user  = User.find_by(id: member.user_id)
+                    if member.votes != nil
+                        participants[user.name] = true;
+                    else
+                        participants[user.name] = false;
+                    end
+                end
+            end'''
+    
+            return participants
+        end
+    
+        def get_votes_in_room(room_token)
+            room_id = Room.find_by(token: room_token).id
+            members = Member.where(:room_id => room_id)
+    
+            room_votes = {}
+            for member in members do
+                if member != nil and member.votes != nil
+                    member_votes = member.votes.split(";");
+                    for loc_id in member_votes do 
+                        if !room_votes.key?loc_id 
+                            room_votes[loc_id] = 0
+                        end
+                        room_votes[loc_id] += 1;
+                    end 
+                end
+            end
+    
+            return room_votes
+        end
+    
+        def show 
+            status = 404
+            if params.has_key?(:id)
+                @room = Room.find params[:id]
+                status = 200
+            elsif params.has_key?(:token)
+                @room = Room.find_by! token: params[:token]
+                status = 200
+            end
+            render json: @room, status: status
+        end
 
     def get_votes_in_room(room_token)
         room_id = Room.find_by(token: room_token).id
