@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_12_111439) do
+ActiveRecord::Schema.define(version: 2021_03_12_115102) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -56,8 +56,6 @@ ActiveRecord::Schema.define(version: 2021_03_12_111439) do
     t.string "password"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "username"
-    t.index ["username"], name: "index_users_on_username"
   end
 
   add_foreign_key "restaurants", "locations"
