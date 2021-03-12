@@ -57,23 +57,25 @@ class RoomsController < ApplicationController
 
     def get_participants(room_id)
         members = Member.where(:room_id => room_id)
-        member_ids_votes = members.pluck(:user_id, :votes)
-        member_ids = members.pluck(:user_id)
-        member_votes = members.pluck(:votes)
-        users = User.find(member_ids)
-        ids_with_votes = []
-        ids_without_votes = []
-        for member in member_ids_votes do
-            if member[1]!= nil
-                ids_with_votes.push(member[0])
+        
+        # member_ids_votes = members.pluck(:user_id, :votes)
+        # member_ids = members.pluck(:user_id)
+        # member_votes = members.pluck(:votes)
+        # users = User.find(member_ids)
+        
+        voting_names = []
+        for member in members do
+            if member.votes != nil
+                voting_names.push(member.name)
             end
         end
+
         participants = {}
-        for user in users do
-            if ids_with_votes.include? user.id
-                participants[user.name] = true
+        for member in members do
+            if voting_names.include? member.name
+                participants[member.name] = true
             else
-                participants[user.name] = false
+                participants[member.name] = false
             end 
         end
         return participants
