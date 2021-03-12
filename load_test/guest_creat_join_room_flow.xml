@@ -7,30 +7,32 @@
     </clients>
 
     <servers>
-        <server host="demo2.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/>
-        <!-- <server host="localhost" port="3000" type="tcp"/> -->
+        <!-- <server host="aprilsanchez.eba-iap3pwy3.us-west-2.elasticbeanstalk.com" port="80" type="tcp"/> -->
+        <server host="localhost" port="3000" type="tcp"/>
     </servers>
 
     <load>
-        <!-- <arrivalphase phase="1" duration="10" unit="second">
-            <users arrivalrate="1" unit="second"/>
+        <arrivalphase phase="1" duration="5" unit="second">
+            <users arrivalrate="2" unit="second"/>
         </arrivalphase>
-        <arrivalphase phase="2" duration="10" unit="second">
-            <users arrivalrate="5" unit="second"/>
-        </arrivalphase> -->
-        <arrivalphase phase="1" duration="30" unit="second">
-            <users arrivalrate="100" unit="second"/>
+        <arrivalphase phase="2" duration="5" unit="second">
+            <users arrivalrate="4" unit="second"/>
         </arrivalphase>
-
-        <!-- <arrivalphase phase="1" duration="1" unit="minute">
-            <users arrivalrate="1" unit="second"/>
+        <arrivalphase phase="3" duration="5" unit="second">
+            <users arrivalrate="8" unit="second"/>
         </arrivalphase>
-        <arrivalphase phase="2" duration="2" unit="minute">
-            <users arrivalrate="10" unit="second"/>
+        <arrivalphase phase="4" duration="5" unit="second">
+            <users arrivalrate="16" unit="second"/>
         </arrivalphase>
-        <arrivalphase phase="3" duration="3" unit="minute">
-            <users arrivalrate="50" unit="second"/>
-        </arrivalphase> -->
+        <arrivalphase phase="5" duration="5" unit="second">
+            <users arrivalrate="32" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="6" duration="5" unit="second">
+            <users arrivalrate="64" unit="second"/>
+        </arrivalphase>
+        <arrivalphase phase="7" duration="5" unit="second">
+            <users arrivalrate="128" unit="second"/>
+        </arrivalphase>
     </load>
 
     <sessions>
@@ -57,7 +59,11 @@
                 <dyn_variable name="room_id" jsonpath="$.id"/>
                 <http url="/room" method="POST"
                     content_type='application/json'
-                    contents_from_file="room.json" />
+                    contents_from_file="room.json" >
+                    <add_cookie key="_csrf_token" value= "%%_csrf_token%%" />
+                    <add_cookie key="session_id" value= "%%_session_id%%" />
+                    <add_cookie key="user_id" value="%%_user_id%%" />
+                </http>
             </request>
 
             <request subst="true">
@@ -68,26 +74,6 @@
                 </http>
             </request>
 
-            <!-- user takes time to make decision-->
-            <thinktime min="2" max="5" random="true"></thinktime>
-
-
-            <!-- user votes -->
-            <request subst="true">
-                <http url="/member/update_vote" method="POST"
-                    content_type='application/json'
-                    contents='{
-                        &quot;user_id&quot;: &quot;%%_user_id%%&quot;,
-                        &quot;token&quot;: &quot;%%_room_token%%&quot;,
-                        &quot;votes&quot;: &quot;3;4;5&quot;
-                    }' />
-            </request>
-
-
-            <!-- user views results -->
-            <request subst="true">
-                <http url="/room/votes/%%_room_token%%" method="GET" />
-            </request>
 
         </session>
     </sessions>

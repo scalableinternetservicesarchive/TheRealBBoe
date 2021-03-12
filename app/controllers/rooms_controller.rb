@@ -1,5 +1,5 @@
 class RoomsController < ApplicationController
-    protect_from_forgery with: :null_session
+    protect_from_forgery :except => :create 
 
     def index
         @room = Room.all	
@@ -106,7 +106,7 @@ class RoomsController < ApplicationController
     def create
         @location_id = params[:location_id]
         @room_name = params[:room_name]
-        @user_id = params[:user_id]
+        @user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
 
         # @location_id = Location.where(name: @location_name).pluck(:id)[0]
         @room = Room.new(name:@room_name, location_id:@location_id)
