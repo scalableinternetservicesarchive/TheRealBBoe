@@ -59,4 +59,23 @@ class UsersController < ApplicationController
             render json: {}, status: 404	
         end	
     end
+
+    def add_test_users
+        @num_users = params[:num_users]
+
+        charset = Array('A'..'Z') + Array('a'..'z')
+
+        begin
+            for i in 1..@num_users.to_i do
+                @name = "RandName"+ Array.new(10) { charset.sample }.join
+                @user = User.new(name: @name, username:@name, password: nil, is_auth: false)
+                @user.save
+            end
+        rescue
+            render json: {message: "error"}, status: 500
+        end
+
+        render json: {}, status: 200
+    end
+
 end

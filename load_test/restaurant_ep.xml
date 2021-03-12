@@ -10,28 +10,28 @@
   </servers>
 
   <load>
-    <arrivalphase phase="1" duration="5" unit="second">
+    <arrivalphase phase="1" duration="30" unit="second">
       <users arrivalrate="1" unit="second"></users>
     </arrivalphase>
-    <arrivalphase phase="2" duration="5" unit="second">
+    <arrivalphase phase="2" duration="30" unit="second">
       <users arrivalrate="2" unit="second"></users>
     </arrivalphase>
-    <arrivalphase phase="3" duration="5" unit="second">
+    <arrivalphase phase="3" duration="30" unit="second">
       <users arrivalrate="4" unit="second"></users>
     </arrivalphase>
-    <arrivalphase phase="4" duration="5" unit="second">
+    <arrivalphase phase="4" duration="30" unit="second">
       <users arrivalrate="8" unit="second"></users>
     </arrivalphase>
-    <arrivalphase phase="5" duration="5" unit="second">
+    <arrivalphase phase="5" duration="30" unit="second">
       <users arrivalrate="16" unit="second"></users>
     </arrivalphase>
-    <arrivalphase phase="6" duration="5" unit="second">
+    <arrivalphase phase="6" duration="30" unit="second">
       <users arrivalrate="32" unit="second"></users>
     </arrivalphase>
-    <arrivalphase phase="7" duration="5" unit="second">
+    <arrivalphase phase="7" duration="30" unit="second">
       <users arrivalrate="64" unit="second"></users>
     </arrivalphase>
-    <arrivalphase phase="8" duration="5" unit="second">
+    <arrivalphase phase="8" duration="30" unit="second">
       <users arrivalrate="128" unit="second"></users>
     </arrivalphase>
   </load>
@@ -43,8 +43,30 @@
 
   <sessions>
     <session name="example" type="ts_http" weight="1">
-      <request><http method="GET" url="/restaurants"></http></request>
-      <thinktime value="5" random="true"></thinktime>
+      
+      <!-- home page (models queried for display in react) -->
+      <request><http method="GET" url="/"></http></request>
+      <thinktime value="3" random="true"></thinktime>
+
+      <!-- create guest user -->
+      <request>
+        <dyn_variable name="csrf_token" jsonpath="$.session._csrf_token"/>
+        <dyn_variable name="session_id" jsonpath="$.session.session_id"/>
+        <dyn_variable name="user_id" jsonpath="$.session.user_id"/>
+        <http url='/guest_signin/' method="POST"
+            content_type='application/json'
+            contents_from_file="guest.json" />
+      </request>
+
+      <!-- Search through the restaurants -->
+      <for from="1" to="5" incr = "1" var = "page">
+        <request subst = "true">
+          <http method="GET" url="/restaurants?page=%%_page%%"></http>
+        </request>
+        <thinktime value="5" random="true"></thinktime>
+      </for>
+
+      <!-- User adds a restaurant -->
       <request subst="true">
         <http url="/restaurant" method="POST"
             content_type='application/json'
@@ -54,7 +76,11 @@
                 &quot;location_id&quot;: &quot;1&quot;
             }' />
       </request>
+      <thinktime value="10" random="true"></thinktime>
+
+       <!-- User browses the restauants again (only first page, b/c newest is shown first) -->
       <request><http method="GET" url="/restaurants"></http></request>
+
     </session>
   </sessions>
 </tsung>

@@ -15,15 +15,13 @@ class RoomsController < ApplicationController
         if session.key?(:user_id) || params.has_key?(:user_id)
             @room_token = params[:token]
             user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
-            #room = Room.find_by(token: @room_token)
             room = Room.cached_find_using_token(@room_token)
             user = User.cached_find(user_id)
             @user_name = user.name
             
-            #member = Member.find_by(user_id: user_id, room_id: room.id)
             member = Member.cached_find(user_id, room.id)
             if !member
-                member = Member.new(user_id: user_id, room_id: room.id, is_host: false)
+                member = Member.new(user_id: user_id, room_id: room.id, is_host: false, name: @user_name)
                 if !member.save
                     render json: {}, status: 422
                 end
@@ -33,8 +31,7 @@ class RoomsController < ApplicationController
             @participants = get_participants(room.id)
 
             location_id = room.location_id
-            #restaurant_list = Restaurant.where(location_id: location_id)
-            restaurant_list = Restaurant.cached_restaurants_in_location(location_id)
+            restaurant_list = Restaurant.cached_restaurants_in_location(location_id).paginate(:page => params[:page]).order('id DESC')
             @restaurants = {}
             for restaurant in restaurant_list do
                 @restaurants[restaurant.id] = restaurant
@@ -59,20 +56,26 @@ class RoomsController < ApplicationController
     end
 
     def get_participants(room_id)
-        members = Member.cached_find_room_members(room_id)
-
-        participants = {}
-        for member in members do
-            if member != nil
-                user = User.cached_find(member.user_id)
-                if member.votes != nil
-                    participants[user.name] = true;
-                else
-                    participants[user.name] = false;
-                end
+        members = Member.where(:room_id => room_id)
+        member_ids_votes = members.pluck(:user_id, :votes)
+        member_ids = members.pluck(:user_id)
+        member_votes = members.pluck(:votes)
+        users = User.find(member_ids)
+        ids_with_votes = []
+        ids_without_votes = []
+        for member in member_ids_votes do
+            if member[1]!= nil
+                ids_with_votes.push(member[0])
             end
         end
-
+        participants = {}
+        for user in users do
+            if ids_with_votes.include? user.id
+                participants[user.name] = true
+            else
+                participants[user.name] = false
+            end 
+        end
         return participants
     end
 
@@ -96,6 +99,7 @@ class RoomsController < ApplicationController
             end
             room_votes
         end
+        return Hash[room_votes.sort_by {|k,v| v}[0..10]]
     end
 
     def show 
@@ -146,7 +150,7 @@ class RoomsController < ApplicationController
             @room.token = generate_room_token(@room.id)
 
             if @room.save
-                render json: {room_token: @room.token, id: @room.id, session: session}, status: 200
+                render json: {room_token: @room.token, id: @room.id, session: session}, status: 201
             else
                 render json: {}, status: 422    
             end

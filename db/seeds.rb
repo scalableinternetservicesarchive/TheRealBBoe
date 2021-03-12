@@ -34,43 +34,43 @@ Room.find_or_create_by(token: "V0Z0T", name: "Where to go?", location_id: 1)
 # Room.find_or_create_by(token: "R1Z0H", name: "Room3", location_id: 1)
 # Room.find_or_create_by(token: "Q1Z0N", name: "Room4", location_id: 1)
 
-Member.find_or_create_by(room_id: 1, user_id: 1, is_host: false)
-Member.find_or_create_by(room_id: 1, user_id: 2, is_host: false)
-Member.find_or_create_by(room_id: 1, user_id: 3, votes:"7;8;9;10;11", is_host: true)
-Member.find_or_create_by(room_id: 2, user_id: 1, is_host: true)
-Member.find_or_create_by(room_id: 2, user_id: 3, votes:"1;2;3", is_host: false)
-Member.find_or_create_by(room_id: 3, user_id: 3, votes:"11;12;13", is_host: false)
-Member.find_or_create_by(room_id: 3, user_id: 1, votes:"11;12;13", is_host: false)
-Member.find_or_create_by(room_id: 3, user_id: 2, votes:"11;12;13", is_host: true)
-Member.find_or_create_by(room_id: 4, user_id: 3, votes:"4;5;8;2", is_host: false)
-Member.find_or_create_by(room_id: 4, user_id: 2, votes:"5;8;2", is_host: false)
-Member.find_or_create_by(room_id: 4, user_id: 1, votes:"4;8;2", is_host: true)
-Member.find_or_create_by(room_id: 4, user_id: 4, votes:"4;5;8", is_host: false)
-Member.find_or_create_by(room_id: 4, user_id: 5,  is_host: false)
-Member.find_or_create_by(room_id: 5, user_id: 3, votes:"1;2;3", is_host: false)
-Member.find_or_create_by(room_id: 5, user_id: 4, votes:"1;2;14", is_host: false)
-Member.find_or_create_by(room_id: 5, user_id: 2, votes:"1;2;3;10;11", is_host: true)
-Member.find_or_create_by(room_id: 5, user_id: 5, is_host: false)
-Member.find_or_create_by(room_id: 6, user_id: 1, votes:"1;2;3", is_host: false)
-Member.find_or_create_by(room_id: 6, user_id: 2, votes:"1;2;3", is_host: false)
-Member.find_or_create_by(room_id: 6, user_id: 3, votes:"11;12;13;3;4;6;7", is_host: false)
-Member.find_or_create_by(room_id: 6, user_id: 4, votes:"11;12;13", is_host: true)
-Member.find_or_create_by(room_id: 7, user_id: 3, votes:"1;2;3;5;6;7;8;9;10", is_host: false)
-Member.find_or_create_by(room_id: 7, user_id: 4, is_host: false)
-Member.find_or_create_by(room_id: 7, user_id: 2, votes:"1;2;3;10;11", is_host: true)
-Member.find_or_create_by(room_id: 7, user_id: 5, is_host: false)
-Member.find_or_create_by(room_id: 8, user_id: 3, votes:"9;10;11;12;8;1;2", is_host: false)
-Member.find_or_create_by(room_id: 8, user_id: 4, is_host: false)
-Member.find_or_create_by(room_id: 8, user_id: 2, votes:"1;2;3;10;11", is_host: true)
-Member.find_or_create_by(room_id: 8, user_id: 5, is_host: false)
-Member.find_or_create_by(room_id: 9, user_id: 3, votes:"7;5;1;6;9;10;14", is_host: false)
-Member.find_or_create_by(room_id: 9, user_id: 4, is_host: false)
-Member.find_or_create_by(room_id: 9, user_id: 2, votes:"1;2;3;10;14", is_host: true)
-Member.find_or_create_by(room_id: 9, user_id: 5, is_host: false)
-Member.find_or_create_by(room_id: 10, user_id: 3, votes:"1;2;3", is_host: true)
-Member.find_or_create_by(room_id: 10, user_id: 4, is_host: false)
-Member.find_or_create_by(room_id: 10, user_id: 2, votes:"1;2;3;14;11", is_host: false)
-Member.find_or_create_by(room_id: 10, user_id: 5, is_host: false)
+Member.find_or_create_by(room_id: 1, user_id: 1, name: 'Ryan', is_host: false)
+Member.find_or_create_by(room_id: 1, user_id: 2, name: 'April', is_host: false)
+Member.find_or_create_by(room_id: 1, user_id: 3, name: 'Laboni', votes:"7;8;9;10;11", is_host: true)
+Member.find_or_create_by(room_id: 2, user_id: 1, name: 'Ryan', is_host: true)
+Member.find_or_create_by(room_id: 2, user_id: 3, name: 'Laboni', votes:"1;2;3", is_host: false)
+Member.find_or_create_by(room_id: 3, user_id: 3, name: 'Laboni', votes:"11;12;13", is_host: false)
+Member.find_or_create_by(room_id: 3, user_id: 1, name: 'Ryan', votes:"11;12;13", is_host: false)
+Member.find_or_create_by(room_id: 3, user_id: 2, name: 'April', votes:"11;12;13", is_host: true)
+Member.find_or_create_by(room_id: 4, user_id: 3, name: 'Laboni', votes:"4;5;8;2", is_host: false)
+Member.find_or_create_by(room_id: 4, user_id: 2, name: 'April', votes:"5;8;2", is_host: false)
+Member.find_or_create_by(room_id: 4, user_id: 1, name: 'Ryan', votes:"4;8;2", is_host: true)
+Member.find_or_create_by(room_id: 4, user_id: 4, name: 'Wei-Yee', votes:"4;5;8", is_host: false)
+Member.find_or_create_by(room_id: 4, user_id: 5, name: 'Saurav',  is_host: false)
+Member.find_or_create_by(room_id: 5, user_id: 3, name: 'Laboni', votes:"1;2;3", is_host: false)
+Member.find_or_create_by(room_id: 5, user_id: 4, name: 'Wei-Yee', votes:"1;2;14", is_host: false)
+Member.find_or_create_by(room_id: 5, user_id: 2, name: 'April', votes:"1;2;3;10;11", is_host: true)
+Member.find_or_create_by(room_id: 5, user_id: 5, name: 'Saurav', is_host: false)
+Member.find_or_create_by(room_id: 6, user_id: 1, name: 'Ryan', votes:"1;2;3", is_host: false)
+Member.find_or_create_by(room_id: 6, user_id: 2, name: 'April', votes:"1;2;3", is_host: false)
+Member.find_or_create_by(room_id: 6, user_id: 3, name: 'Laboni', votes:"11;12;13;3;4;6;7", is_host: false)
+Member.find_or_create_by(room_id: 6, user_id: 4, name: 'Wei-Yee', votes:"11;12;13", is_host: true)
+Member.find_or_create_by(room_id: 7, user_id: 3, name: 'Laboni', votes:"1;2;3;5;6;7;8;9;10", is_host: false)
+Member.find_or_create_by(room_id: 7, user_id: 4, name: 'Wei-Yee', is_host: false)
+Member.find_or_create_by(room_id: 7, user_id: 2, name: 'April', votes:"1;2;3;10;11", is_host: true)
+Member.find_or_create_by(room_id: 7, user_id: 5, name: 'Saurav', is_host: false)
+Member.find_or_create_by(room_id: 8, user_id: 3, name: 'Laboni', votes:"9;10;11;12;8;1;2", is_host: false)
+Member.find_or_create_by(room_id: 8, user_id: 4, name: 'Wei-Yee', is_host: false)
+Member.find_or_create_by(room_id: 8, user_id: 2, name: 'April', votes:"1;2;3;10;11", is_host: true)
+Member.find_or_create_by(room_id: 8, user_id: 5, name: 'Saurav', is_host: false)
+Member.find_or_create_by(room_id: 9, user_id: 3, name: 'Laboni', votes:"7;5;1;6;9;10;14", is_host: false)
+Member.find_or_create_by(room_id: 9, user_id: 4, name: 'Wei-Yee', is_host: false)
+Member.find_or_create_by(room_id: 9, user_id: 2, name: 'April', votes:"1;2;3;10;14", is_host: true)
+Member.find_or_create_by(room_id: 9, user_id: 5, name: 'Saurav', is_host: false)
+Member.find_or_create_by(room_id: 10, user_id: 3, name: 'Laboni', votes:"1;2;3", is_host: true)
+Member.find_or_create_by(room_id: 10, user_id: 4, name: 'Wei-Yee', is_host: false)
+Member.find_or_create_by(room_id: 10, user_id: 2, name: 'April', votes:"1;2;3;14;11", is_host: false)
+Member.find_or_create_by(room_id: 10, user_id: 5, name: 'Saurav', is_host: false)
 
 
 Restaurant.find_or_create_by(name: "Deja Vu", location_id: 1, description: "Indian food")
@@ -108,6 +108,21 @@ def generate_room_token(room_id)
     return s_token
 end
 
+#Restaurants random generation
+@n = 1000
+charset = Array('A'..'Z') + Array('a'..'z')
+
+restaurants = []
+for i in 1..@n.to_i do
+    @location = rand(1..3)
+    @name = "RandName"+ Array.new(10) { charset.sample }.join
+    @desc = "RandDesc"+ Array.new(42) { charset.sample }.join
+    restaurants << {name: @name, description:@desc, location_id:@location}
+end
+Restaurant.create(restaurants)
+
+
+# Generate Rooms with tokens
 room_count = Room.count
 new_rooms = []
 for i in (room_count+1)..500 do
@@ -115,3 +130,15 @@ for i in (room_count+1)..500 do
 	new_rooms << {token: token, name: "Room"+i.to_s, location_id: (i%3)+1}
 end
 Room.create(new_rooms)
+
+users = []
+for i in 0..1000 do
+    users << {name: "FAKE USER", username: i.to_s, password: 'password', is_auth: true}
+end
+User.create(users)
+
+members = []
+for i in 0..1000 do
+    members << {room_id: rand(90)+11, user_id: i+1, votes:"11;12;13", is_host: false}
+end
+Member.create(members)
