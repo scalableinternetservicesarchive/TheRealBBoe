@@ -38,10 +38,6 @@
     <sessions>
         <session name="past_room_view" weight="1" type="ts_http">
             <!-- home page (models queried for display in react) -->
-            <request>
-                <http url='/' method="GET" />
-            </request>
-
         <transaction name="LogIn">
             <!-- log in : need to choose random authenticated user for logging in-->
             <request>
