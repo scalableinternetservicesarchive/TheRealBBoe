@@ -1,13 +1,14 @@
 class UsersController < ApplicationController
 
     protect_from_forgery :except => :create 	
+    
 
     def index	
         @user = User.all	
 
         if params.has_key?(:room_id)	
             # get all users part of the room	
-            members = Member.where(room_id: params[:room_id])	
+            members = Member.cached_find_room_members(params[:room_id])
             user_ids = members.map(&:user_id)	
             @user = @user.find(id=user_ids)	
         end	
@@ -16,7 +17,7 @@ class UsersController < ApplicationController
     end	
 
     def show	
-        @user = User.find_by(params[:id])	
+        @user = User.cached_find(params[:id])
 
         if @user
             body = @user
@@ -34,7 +35,7 @@ class UsersController < ApplicationController
 
     def create	
         @username = params[:username]
-        if User.find_by(username: @username)
+        if User.cached_find_username(@username)
             render json: {}, status: 400
         else
             @user = User.new(user_params)	
@@ -51,11 +52,30 @@ class UsersController < ApplicationController
 
     def destroy 	
         if User.exists? id: params[:id]	
-            @user = User.find(params[:id])	
+            @user = User.cached_find(params[:id])
             @user.destroy	
             render json: @user	
         else	
             render json: {}, status: 404	
         end	
     end
+
+    def add_test_users
+        @num_users = params[:num_users]
+
+        charset = Array('A'..'Z') + Array('a'..'z')
+
+        begin
+            for i in 1..@num_users.to_i do
+                @name = "RandName"+ Array.new(10) { charset.sample }.join
+                @user = User.new(name: @name, username:@name, password: nil, is_auth: false)
+                @user.save
+            end
+        rescue
+            render json: {message: "error"}, status: 500
+        end
+
+        render json: {}, status: 200
+    end
+
 end

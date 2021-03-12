@@ -251,7 +251,8 @@ const Homepage = (props) => {
 
     //for logging out
     function handleLogOut(){
-        fetch('/log_out');
+        fetch('/log_out')
+
         setIsLoggedIn(false);
         setIsGuestUser(false);
         setUserInfo({...userInfo, name: "", id: "", is_auth: false});
@@ -349,6 +350,27 @@ const Homepage = (props) => {
             console.error("Error: ", error);
         });
     }
+
+    const handleShowRestaurants=() => {
+
+        fetch('/redirect_to_restaurants', {
+            method: 'GET', 
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                console.log("in redirection")
+                window.location.href = response.url;
+            }
+            else{
+                
+                console.log(response);
+            }
+        })
+    }
     
     const signUp=() => {
         console.log("in sign up");
@@ -418,6 +440,7 @@ const Homepage = (props) => {
             <button type="button" className="btn btn-primary" onClick={handleJoinRoomShow}>Join room</button><br/><br/>
             <button type="button" className="btn btn-primary" onClick={handleCreateRoomShow}>Create Room</button><br/><br/>
             <button type="button" className="btn btn-primary" onClick={handleAddRestaurantShow}>Add Restaurant</button><br/><br/>
+            <button type="button" className="btn btn-primary" onClick={handleShowRestaurants}>All Restaurants</button><br/><br/>
             <button type="button" className="btn btn-primary" onClick={handleLogOut}>Log Out</button>
 
             <Modal show={!isLoggedIn}>

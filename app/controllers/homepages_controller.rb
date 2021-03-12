@@ -7,10 +7,11 @@ class HomepagesController < ApplicationController
     }
     @signed_in = false 
     if session.key?:user_id
-      if User.exists?(id: session[:user_id])
-        @user_info["name"] = User.find(session[:user_id]).name
+      @user = User.find(session[:user_id])
+      if @user
+        @user_info["name"] = @user.name
         @user_info["id"] = session[:user_id]
-        @user_info["is_auth"] = User.find(session[:user_id]).is_auth
+        @user_info["is_auth"] = @user.is_auth
         @signed_in = true
       else
         session.delete(:user_id)
@@ -19,6 +20,10 @@ class HomepagesController < ApplicationController
   end
 
   def log_out
+    if !session[:is_auth]
+        User.delete(session[:user_id])
+    end
+
     session.delete(:user_id)
     render json: {}, status: 200
   end
@@ -29,6 +34,7 @@ class HomepagesController < ApplicationController
 
     if @user.save
     	session[:user_id] = @user.id
+        session[:is_auth] = @user.is_auth
      	render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth:false}, session: session}, status: 200
     else # could not process, return 422
      	render json: {params: params}, status: 422
@@ -39,7 +45,7 @@ class HomepagesController < ApplicationController
   def add_guest_name
     @guest_name = params[:name]
     @id = session[:user_id]
-    @user = User.find_by(id: @id)
+    @user = User.cached_find(@id)
     if @user
       @user.update_attribute(:name, @guest_name)
       render json: {user_id: @id}, status: 200
@@ -52,12 +58,16 @@ class HomepagesController < ApplicationController
   def signin
   	@name = params[:username]
     @password = params[:password]
-  	@user = User.find_by(username: @name, password: @password)
-    if @user
-    	session[:user_id] = @user.id
-        render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth: @user.is_auth}, session: session}, status: 200
+  	#@user = User.find_by(username: @name, password: @password)
+    @user = User.find_by(username: @name)
+    user_pass = @user.password
+    
+    if user_pass!= @password
+        render json: {params: params}, status: 404
     else
-       render json: {params: params}, status: 404
+        session[:user_id] = @user.id
+        session[:is_auth] = @user.is_auth
+        render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth: @user.is_auth}, session: session}, status: 200
     end
   end
 
@@ -70,6 +80,25 @@ class HomepagesController < ApplicationController
 
     Rails.application.load_seed
 
+    #Restaurants random generation
+    @n = 1000
+    charset = Array('A'..'Z') + Array('a'..'z')
+    begin
+      for i in 1..@n.to_i do
+        @location = rand(1..3)
+        @name = "RandName"+ Array.new(10) { charset.sample }.join
+        @desc = "RandDesc"+ Array.new(42) { charset.sample }.join
+        @restaurant = Restaurant.new(name: @name, description:@desc, location_id:@location)
+        @restaurant.save
+      end
+    rescue
+      render json: {}, status: 500
+    end
+
     render json: {}, status: 200
+  end
+
+  def redirect_to_root
+    redirect_to "/"
   end
 end

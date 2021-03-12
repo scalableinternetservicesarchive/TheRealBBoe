@@ -12,15 +12,19 @@ class MembersController < ApplicationController
         @user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
         @room_ids = Member.where(user_id: @user_id).pluck(:room_id)
 
+        @rooms = Room.find(@room_ids)
+        #render json: @rooms
+        
         @roomList = []
-        @room_ids.each { |room_id|
-            @room = Room.find_by(id: room_id)
+        #@rooms.each { |room|
+        for room in @rooms do
+            #@room = Room.find_by(id: room_id)
             temp = {}
-            temp.store("room_id",@room.id)
-            temp.store("room_name", @room.name) 
-            temp.store("room_token", @room.token)
+            temp.store("room_id",room.id)
+            temp.store("room_name", room.name) 
+            temp.store("room_token", room.token)
             @roomList.push(temp)
-        }
+        end
         render json: {rooms: @roomList}, status: 200
     end
 
@@ -52,7 +56,6 @@ class MembersController < ApplicationController
             temp.store("user_id",m[:user_id])
             temp.store("user_name", User.where(id: m[:user_id]).first[:username]) 
             temp.store("is_host",m[:is_host])
-            #temp.store ("votes",m[:votes])
             returnList.push(temp)
         end
         render json: JSON[returnList], status: 200
@@ -60,8 +63,9 @@ class MembersController < ApplicationController
 
     def create
         @member = Member.new(member_params)
+        @member.name = User.find_by(id: params[:user_id]).name
         if @member.save
-            render json: @member
+            render json: @member, status: 201
         else
             render json: {}, status: 422
         end

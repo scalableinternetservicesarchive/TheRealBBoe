@@ -9,7 +9,7 @@ class LocationsController < ApplicationController
       @name = params[:name]
       @location = Location.new(name:@name)
       if @location.save
-        render json: {location: @location}
+        render json: {location: @location}, status: 201
       else
         render json: {}, status: 422
       end 
