@@ -49,7 +49,7 @@
                       contents_from_file="userLogin.json" />
             </request>
             <request>
-                <http url="/log_out" method="GET">
+                <http url="/log_out" method="GET"/>
             </request>
         </transaction>
 
