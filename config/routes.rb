@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     get 'users', to: 'users#index'
     post 'user', to: 'users#create'
     delete 'user', to: 'users#destroy'
+    get 'add_test_users/:num_users', to: 'users#add_test_users'
 
     # member operations
     get 'member', to: 'members#show'
