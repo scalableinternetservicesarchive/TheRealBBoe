@@ -133,6 +133,25 @@ const Roompage = (props) => {
         return (<div>{optionlist}</div>)
     }
 
+    const backToRoot=() => {
+        fetch('/return_to_root', {
+            method: 'GET', 
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                console.log("in redirection")
+                window.location.href = response.url;
+            }
+            else{
+                console.log(response);
+            }
+        })
+    }
+
     return (
         <div class="container">
 
@@ -145,6 +164,7 @@ const Roompage = (props) => {
 
                     <h3>Results</h3>
                     {voteResults()}
+                    <button type="button" className="btn btn-primary" onClick={backToRoot}>Home</button>
                     <Button id="revote" onClick={e => setDoneVoting(false)}>Revote</Button>
                     
                 </div>
@@ -155,6 +175,7 @@ const Roompage = (props) => {
                     </div>
                     {optionItems()}
                     <div><br/>
+                        <button type="button" className="btn btn-primary" onClick={backToRoot}>Home</button>
                         <Button id="submit-votes" onClick={submitVotes}>Submit</Button>
                     </div>
                 </div>                

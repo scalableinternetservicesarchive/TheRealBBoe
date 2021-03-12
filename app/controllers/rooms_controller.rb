@@ -2,7 +2,8 @@ class RoomsController < ApplicationController
     protect_from_forgery with: :null_session
 
     def index
-        @room = Room.all	
+        @room = Room.all
+#        a = get_votes_in_room("VIW0T")
         render json: @room
     end
 
@@ -14,10 +15,11 @@ class RoomsController < ApplicationController
         if session.key?(:user_id) || params.has_key?(:user_id)
             @room_token = params[:token]
             user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
-            room = Room.find_by(token: @room_token)
-            @user_name = User.find_by(id: user_id).name
+            room = Room.cached_find_using_token(@room_token)
+            user = User.cached_find(user_id)
+            @user_name = user.name
             
-            member = Member.find_by(user_id: user_id, room_id: room.id)
+            member = Member.cached_find(user_id, room.id)
             if !member
                 member = Member.new(user_id: user_id, room_id: room.id, is_host: false, name: @user_name)
                 if !member.save
@@ -29,7 +31,7 @@ class RoomsController < ApplicationController
             @participants = get_participants(room.id)
 
             location_id = room.location_id
-            restaurant_list = Restaurant.where(location_id: location_id).paginate(:page => params[:page]).order('id DESC')
+            restaurant_list = Restaurant.cached_restaurants_in_location(location_id).paginate(:page => params[:page]).order('id DESC')
             @restaurants = {}
             for restaurant in restaurant_list do
                 @restaurants[restaurant.id] = restaurant
@@ -54,9 +56,7 @@ class RoomsController < ApplicationController
     end
 
     def get_participants(room_id)
-    #def get_participants
         members = Member.where(:room_id => room_id)
-       # members = Member.where(:room_id=> params[:room_id])
         member_ids_votes = members.pluck(:user_id, :votes)
         member_ids = members.pluck(:user_id)
         member_votes = members.pluck(:votes)
@@ -76,43 +76,29 @@ class RoomsController < ApplicationController
                 participants[user.name] = false
             end 
         end
-
-        
-
-        #render json:participants
-        
-        '''participants = {}
-        for member in members do
-            if member != nil
-                if member.votes != nil
-                    participants[member.name] = true;
-                else
-                    participants[member.name] = false;
-                end
-            end
-        end'''
-
         return participants
     end
 
     def get_votes_in_room(room_token)
-        room_id = Room.find_by(token: room_token).id
-        members = Member.where(:room_id => room_id)
+        room = Room.cached_find_using_token(room_token)
 
-        room_votes = {}
-        for member in members do
-            if member != nil and member.votes != nil
-                member_votes = member.votes.split(";");
-                for loc_id in member_votes do 
-                    if !room_votes.key?loc_id 
-                        room_votes[loc_id] = 0
-                    end
-                    room_votes[loc_id] += 1;
-                end 
+        Rails.cache.fetch("#{room.cache_key_with_version}/room_votes", expires_in: 12.hours) do
+            
+            members = Member.cached_find_room_members(room.id)
+            room_votes = {}
+            for member in members do
+                if member != nil and member.votes != nil
+                    member_votes = member.votes.split(";");
+                    for loc_id in member_votes do 
+                        if !room_votes.key?loc_id 
+                            room_votes[loc_id] = 0
+                        end
+                        room_votes[loc_id] += 1;
+                    end 
+                end
             end
+            return Hash[room_votes.sort_by {|k,v| v}[0..10]]
         end
-
-        return Hash[room_votes.sort_by {|k,v| v}[0..10]]
     end
 
     def show 
@@ -127,23 +113,46 @@ class RoomsController < ApplicationController
         render json: @room, status: status
     end
 
+    def generate_room_token(room_id)
+
+        token_set_size = 36 ** 5
+        token = (room_id * (36*36*6-1)) % token_set_size
+        s_token = []
+        
+        for j in 0..4
+            
+            digit = token % 36
+            token = token / 36
+            
+            index = (j*2)%5
+            
+            if digit < 10 
+                s_token[index] = digit.to_s
+            else
+                s_token[index] = (digit + 55).chr
+            end
+        end
+        
+        s_token = s_token.join("")
+        return s_token
+    end
+
     def create
         @location_id = params[:location_id]
         @room_name = params[:room_name]
 
         # @location_id = Location.where(name: @location_name).pluck(:id)[0]
         @room = Room.new(name:@room_name, location_id:@location_id)
-
-        # generate token
-        @room.token = loop do
-            new_token = SecureRandom.hex(4)
-            break new_token unless Room.exists? token: new_token
-        end
     
         if @room.save
-            # TODO: Send them success
-            render json: {room_token: @room.token, id: @room.id, session: session}, status: 201
-            # TODO: Send user to their room page
+            # generate token
+            @room.token = generate_room_token(@room.id)
+
+            if @room.save
+                render json: {room_token: @room.token, id: @room.id, session: session}, status: 201
+            else
+                render json: {}, status: 422    
+            end
         else
             render json: {}, status: 422
         end
