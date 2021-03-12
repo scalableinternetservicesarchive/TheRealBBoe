@@ -29,7 +29,7 @@ class RoomsController < ApplicationController
             @participants = get_participants(room.id)
 
             location_id = room.location_id
-            restaurant_list = Restaurant.where(location_id: location_id)
+            restaurant_list = Restaurant.where(location_id: location_id).paginate(:page => params[:page]).order('id DESC')
             @restaurants = {}
             for restaurant in restaurant_list do
                 @restaurants[restaurant.id] = restaurant
@@ -113,7 +113,7 @@ class RoomsController < ApplicationController
             end
         end
 
-        return room_votes
+        return Hash[room_votes.sort_by {|k,v| v}[0..10]]
     end
 
     def show 
