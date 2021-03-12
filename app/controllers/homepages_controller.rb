@@ -20,6 +20,10 @@ class HomepagesController < ApplicationController
   end
 
   def log_out
+    if !session[:is_auth]
+        User.delete(session[:user_id])
+    end
+
     session.delete(:user_id)
     render json: {}, status: 200
   end
@@ -30,6 +34,7 @@ class HomepagesController < ApplicationController
 
     if @user.save
     	session[:user_id] = @user.id
+        session[:is_auth] = @user.is_auth
      	render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth:false}, session: session}, status: 200
     else # could not process, return 422
      	render json: {params: params}, status: 422
@@ -56,15 +61,13 @@ class HomepagesController < ApplicationController
   	#@user = User.find_by(username: @name, password: @password)
     @user = User.find_by(username: @name)
     user_pass = @user.password
-    if @user
-      if user_pass!= @password
+    
+    if user_pass!= @password
         render json: {params: params}, status: 404
-      else
-    	  session[:user_id] = @user.id
-        render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth: @user.is_auth}}, status: 200
-      end
     else
-       render json: {params: params}, status: 404
+        session[:user_id] = @user.id
+        session[:is_auth] = @user.is_auth
+        render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth: @user.is_auth}, session: session}, status: 200
     end
   end
 

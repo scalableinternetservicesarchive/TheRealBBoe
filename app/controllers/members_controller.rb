@@ -56,7 +56,6 @@ class MembersController < ApplicationController
             temp.store("user_id",m[:user_id])
             temp.store("user_name", User.where(id: m[:user_id]).first[:username]) 
             temp.store("is_host",m[:is_host])
-            #temp.store ("votes",m[:votes])
             returnList.push(temp)
         end
         render json: JSON[returnList], status: 200
@@ -64,8 +63,9 @@ class MembersController < ApplicationController
 
     def create
         @member = Member.new(member_params)
+        @member.name = User.find_by(id: params[:user_id]).name
         if @member.save
-            render json: @member
+            render json: @member, status: 201
         else
             render json: {}, status: 422
         end
