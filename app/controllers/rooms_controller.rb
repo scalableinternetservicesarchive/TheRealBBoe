@@ -1,5 +1,5 @@
 class RoomsController < ApplicationController
-    protect_from_forgery with: :null_session
+    protect_from_forgery :except => :create 
 
     def index
         @room = Room.all
@@ -140,21 +140,31 @@ class RoomsController < ApplicationController
     def create
         @location_id = params[:location_id]
         @room_name = params[:room_name]
+        @user_id = (params.has_key? :user_id) ? params[:user_id] : session[:user_id]
 
         # @location_id = Location.where(name: @location_name).pluck(:id)[0]
         @room = Room.new(name:@room_name, location_id:@location_id)
-    
+        
         if @room.save
-            # generate token
             @room.token = generate_room_token(@room.id)
 
-            if @room.save
-                render json: {room_token: @room.token, id: @room.id, session: session}, status: 201
+            if !@room.save
+                render json: {message: "error"}, status: 422
+                return
+            end
+
+            @member = Member.new(user_id: @user_id, room_id: @room.id, is_host: true)
+
+            if !@member.save
+                render json: {message: "error"}, status: 422
+                return
             else
-                render json: {}, status: 422    
+                render json: {room_token: @room.token, id: @room.id, session: session}, status: 201
             end
         else
-            render json: {}, status: 422
+            render json: {message: "error"}, status: 422
         end
+
+        
     end
 end
