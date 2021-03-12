@@ -110,7 +110,7 @@ end
 Room.create(rooms)
 
 users = []
-for i in 0..10 do
+for i in 0..10000 do
     users << {name: "FAKE USER", username: i.to_s, password: 'password', is_auth: true}
 end
 User.create(users)

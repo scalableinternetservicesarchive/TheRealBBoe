@@ -48,6 +48,9 @@
                     content_type='application/json'
                       contents_from_file="userLogin.json" />
             </request>
+            <request>
+                <http url="/log_out" method="GET">
+            </request>
         </transaction>
 
 

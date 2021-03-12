@@ -39,13 +39,8 @@
         <session name="getRoom" weight="1" type="ts_http">
             <!-- get rooms for joining -->
             <transaction name="getRoomTran">
-                <request>
-                    <dyn_variable name="rooms" jsonpath="$.rooms"/>
-                    <http url="/get_rooms/?user_id=3" method="GET" />
-                </request>
-
                 <!-- select room from drop down -->
-            <request>
+            <request >
                 <http url="/room/join" method="POST"
                     content_type='application/json'
                     contents='{
