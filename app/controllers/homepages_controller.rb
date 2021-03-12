@@ -7,10 +7,11 @@ class HomepagesController < ApplicationController
     }
     @signed_in = false 
     if session.key?:user_id
-      if User.exists?(id: session[:user_id])
-        @user_info["name"] = User.find(session[:user_id]).name
+      @user = User.find(session[:user_id])
+      if @user
+        @user_info["name"] = @user.name
         @user_info["id"] = session[:user_id]
-        @user_info["is_auth"] = User.find(session[:user_id]).is_auth
+        @user_info["is_auth"] = @user.is_auth
         @signed_in = true
       else
         session.delete(:user_id)
@@ -52,10 +53,16 @@ class HomepagesController < ApplicationController
   def signin
   	@name = params[:username]
     @password = params[:password]
-  	@user = User.find_by(username: @name, password: @password)
+  	#@user = User.find_by(username: @name, password: @password)
+    @user = User.find_by(username: @name)
+    user_pass = @user.password
     if @user
-    	session[:user_id] = @user.id
+      if user_pass!= @password
+        render json: {params: params}, status: 404
+      else
+    	  session[:user_id] = @user.id
         render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth: @user.is_auth}}, status: 200
+      end
     else
        render json: {params: params}, status: 404
     end

@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     get 'users', to: 'users#index'
     post 'user', to: 'users#create'
     delete 'user', to: 'users#destroy'
+    get 'add_test_users/:num_users', to: 'users#add_test_users'
 
     # member operations
     get 'member', to: 'members#show'
@@ -27,6 +28,7 @@ Rails.application.routes.draw do
     get 'room/:token', to: 'rooms#roompage'
     post 'room', to: 'rooms#create'
     get 'rooms', to: 'rooms#index'
+    #get 'check/:room_id', to: 'rooms#get_participants'
     get 'existing_token', to: 'rooms#existing_room_token'
     
 
