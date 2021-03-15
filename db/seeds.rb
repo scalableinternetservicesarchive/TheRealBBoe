@@ -86,3 +86,60 @@ Restaurant.find_or_create_by(name: "Spudnuts", location_id: 1, description: "Don
 Restaurant.find_or_create_by(name: "Caje", location_id: 1, description: "Hip Coffee Shop")
 Restaurant.find_or_create_by(name: "Lao Wang", location_id: 1, description: "Asian food")
 Restaurant.find_or_create_by(name: "Shushiya", location_id: 1, description: "Shushi place")
+
+def generate_room_token(room_id)
+    token_set_size = 36 ** 5
+    token = (room_id * (36*36*6-1)) % token_set_size
+    s_token = []
+    
+    for j in 0..4
+        digit = token % 36
+        token = token / 36
+        index = (j*2)%5
+        if digit < 10 
+            s_token[index] = digit.to_s
+        else
+            s_token[index] = (digit + 55).chr
+        end
+    end
+    s_token = s_token.join("")
+    return s_token
+end
+
+#Restaurants random generation
+@n = 1000
+charset = Array('A'..'Z') + Array('a'..'z')
+
+restaurants = []
+for i in 1..@n.to_i do
+    @location = rand(1..3)
+    @name = "RandName"+ Array.new(10) { charset.sample }.join
+    @desc = "RandDesc"+ Array.new(42) { charset.sample }.join
+    restaurants << {name: @name, description:@desc, location_id:@location}
+end
+Restaurant.create(restaurants)
+
+
+# Generate Rooms with tokens
+room_count = Room.count
+new_rooms = []
+@n = 500
+for i in (room_count+1)..@n do
+	token = generate_room_token(i)
+	new_rooms << {token: token, name: "Room"+i.to_s, location_id: (i%3)+1}
+end
+Room.create(new_rooms)
+
+users = []
+@n = 1000
+for i in 0..@n do
+    users << {name: "FAKE USER", username: i.to_s, password: 'password', is_auth: true}
+end
+User.create(users)
+
+members = []
+@n = 1000
+for i in 0..1000 do
+    members << {room_id: rand(900)+11, user_id: i+1, votes:"11;12;13", is_host: false}
+end
+Member.create(members)
