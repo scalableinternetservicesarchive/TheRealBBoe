@@ -8,7 +8,13 @@ class RoomsController < ApplicationController
     end
 
     def existing_room_token
-        render json: {"token": Room.last.token}, status: 200
+
+        room = Room.find(rand(2..400))
+        if room
+            render json: {"token": room.token}, status: 200
+        else 
+            render json: {}, status: 590
+        end
     end
 
     def roompage
