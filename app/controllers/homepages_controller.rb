@@ -62,7 +62,7 @@ class HomepagesController < ApplicationController
     @user = User.find_by(username: @name)
     user_pass = @user.password
     
-    if @user==nil do 
+    if @user==nil 
       render json: {}, status: 469
     elsif user_pass!= @password
         render json: {params: params}, status: 404
