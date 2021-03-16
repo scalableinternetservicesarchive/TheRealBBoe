@@ -62,14 +62,12 @@ class HomepagesController < ApplicationController
     @user = User.find_by(username: @name)
     user_pass = @user.password
     
-    if @user==nil 
-      render json: {}, status: 469
-    elsif user_pass!= @password
-        render json: {params: params}, status: 404
-    else
+    if user_pass.eql? @password
         session[:user_id] = @user.id
         session[:is_auth] = @user.is_auth
         render json: {user_data: {id: @user.id, name: @user.name, username: @user.username, is_auth: @user.is_auth}, session: session}, status: 200
+    else
+        render json: {params: params}, status: 404
     end
   end
 
